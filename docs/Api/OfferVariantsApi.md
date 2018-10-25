@@ -22,10 +22,20 @@ Method | HTTP request | Description
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
+// Configure API key authorization: apiKey
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Api-Key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Api-Key', 'Bearer');
+// Configure API key authorization: bearerAuth
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Authorization', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+
 $apiInstance = new OpenAPI\Client\Api\OfferVariantsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $set_id = 'set_id_example'; // string | Variant set id
 $variant_set = new \OpenAPI\Client\Model\VariantSet(); // \OpenAPI\Client\Model\VariantSet | A valid variant set must consist of three required elements: - name:   - it can't be blank and must not be longer than 50 characters - parameters:   - it should contain parameter identifiers used for offer grouping   - parameter identifiers from the offers and special `color/pattern` value (for grouping via image) are permitted   - it must contain at least one element (up to 2) - offers:   - it must contain at least 2 offers (500 at most)   - `colorPattern` value must be set for every offer if `color/pattern` parameter is used   - `colorPattern` value can't be blank and must not be longer than 50 characters   - `colorPattern` can take arbitrary string value like `red`, `b323592c-522f-4ec1-b9ea-3764538e0ac4` (UUID), etc.   - offers having the same image should have identical `colorPattern` value  Let's assume we have 4 offers:   - offer with id 2 having an image of a red t-shirt and S as a value of parameter with id 21   - offer with id 3 having an image of a red t-shirt and M as a value of parameter with id 21   - offer with id 4 having an image of a blue t-shirt and S as a value of parameter with id 21   - offer with id 5 having an image of a blue t-shirt and M as a value of parameter with id 21  You can build a variant set by grouping offers using combination of available parameters:   - variant set with offer parameter only   ```     {       \"name\": \"t-shirt\",       \"offers\": [         {           \"id\": \"2\"         },         {           \"id\": \"3\"         }       ],       \"parameters\": [         { \"id\": \"21\" }       ]     }   ```   - variant set with `color/pattern` parameter only   ```     {       \"name\": \"t-shirt\",       \"offers\": [         {           \"id\": \"2\",           \"colorPattern\": \"red\"         },         {           \"id\": \"4\",           \"colorPattern\": \"blue\"         }       ],       \"parameters\": [         {\"id\": \"color/pattern\"}       ]     }   ```   - variant set with offer and `color/pattern` parameters   ```     {       \"name\": \"t-shirt\",       \"offers\": [         {           \"id\": \"2\",           \"colorPattern\": \"red\"         },         {           \"id\": \"3\",           \"colorPattern\": \"red\"         },         {           \"id\": \"4\",           \"colorPattern\": \"blue\"         },         {           \"id\": \"5\",           \"colorPattern\": \"blue\"         }       ],       \"parameters\": [         {\"id\": \"color/pattern\"},         {\"id\": \"21\"}       ]     }   ```    More information about variant sets can be found [here](https://allegro.pl/pomoc/faq/wielowariantowosc-jak-polaczyc-oferty-xGgaOByGgTb#dodatkowe-informacje).
@@ -51,7 +61,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[apiKey](../../README.md#apiKey), [bearerAuth](../../README.md#bearerAuth)
 
 ### HTTP request headers
 
@@ -72,10 +82,20 @@ No authorization required
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
+// Configure API key authorization: apiKey
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Api-Key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Api-Key', 'Bearer');
+// Configure API key authorization: bearerAuth
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Authorization', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+
 $apiInstance = new OpenAPI\Client\Api\OfferVariantsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $set_id = 'set_id_example'; // string | Variant set id
 
@@ -99,7 +119,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[apiKey](../../README.md#apiKey), [bearerAuth](../../README.md#bearerAuth)
 
 ### HTTP request headers
 
@@ -120,10 +140,20 @@ No authorization required
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
+// Configure API key authorization: apiKey
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Api-Key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Api-Key', 'Bearer');
+// Configure API key authorization: bearerAuth
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Authorization', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+
 $apiInstance = new OpenAPI\Client\Api\OfferVariantsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $set_id = 'set_id_example'; // string | setId
 
@@ -148,7 +178,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[apiKey](../../README.md#apiKey), [bearerAuth](../../README.md#bearerAuth)
 
 ### HTTP request headers
 
@@ -169,10 +199,20 @@ No authorization required
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
+// Configure API key authorization: apiKey
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Api-Key', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Api-Key', 'Bearer');
+// Configure API key authorization: bearerAuth
+$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKey('Authorization', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+
 $apiInstance = new OpenAPI\Client\Api\OfferVariantsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $user_id = 'user_id_example'; // string | Filter by user id, you are allowed to get your variant sets only.
 $offset = 0; // int | Index of first returned variant set.
@@ -203,7 +243,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[apiKey](../../README.md#apiKey), [bearerAuth](../../README.md#bearerAuth)
 
 ### HTTP request headers
 

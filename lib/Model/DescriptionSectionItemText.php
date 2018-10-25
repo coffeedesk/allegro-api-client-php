@@ -57,6 +57,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
+        'type' => 'string',
         'content' => 'string'
     ];
 
@@ -66,6 +67,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'type' => null,
         'content' => null
     ];
 
@@ -96,6 +98,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
+        'type' => 'type',
         'content' => 'content'
     ];
 
@@ -105,6 +108,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'type' => 'setType',
         'content' => 'setContent'
     ];
 
@@ -114,6 +118,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'type' => 'getType',
         'content' => 'getContent'
     ];
 
@@ -177,6 +182,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['type'] = isset($data['type']) ? $data['type'] : null;
         $this->container['content'] = isset($data['content']) ? $data['content'] : null;
     }
 
@@ -203,6 +209,30 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->container['type'] = $type;
+
+        return $this;
+    }
 
     /**
      * Gets content

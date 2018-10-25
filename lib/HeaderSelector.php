@@ -40,14 +40,6 @@ use \Exception;
  */
 class HeaderSelector
 {
-    private $apiKey;
-    private $authorizationToken;
-
-    public function __construct($apiKey, $authorizationToken)
-    {
-        $this->apiKey = $apiKey;
-        $this->authorizationToken = $authorizationToken;
-    }
 
     /**
      * @param string[] $accept
@@ -64,9 +56,6 @@ class HeaderSelector
         }
 
         $headers['Content-Type'] = $this->selectContentTypeHeader($contentTypes);
-
-        $headers['Api-Key'] = $this->apiKey;
-        $headers['Authorization'] = 'Bearer ' . $this->authorizationToken;
         return $headers;
     }
 

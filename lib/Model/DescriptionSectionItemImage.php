@@ -57,6 +57,7 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
+        'type' => 'string',
         'url' => 'string'
     ];
 
@@ -66,6 +67,7 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'type' => null,
         'url' => null
     ];
 
@@ -96,6 +98,7 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
+        'type' => 'type',
         'url' => 'url'
     ];
 
@@ -105,6 +108,7 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'type' => 'setType',
         'url' => 'setUrl'
     ];
 
@@ -114,6 +118,7 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'type' => 'getType',
         'url' => 'getUrl'
     ];
 
@@ -177,6 +182,7 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['type'] = isset($data['type']) ? $data['type'] : null;
         $this->container['url'] = isset($data['url']) ? $data['url'] : null;
     }
 
@@ -189,6 +195,9 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
+        if ($this->container['type'] === null) {
+            $invalidProperties[] = "'type' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -203,6 +212,30 @@ class DescriptionSectionItemImage implements ModelInterface, ArrayAccess
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string $type type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->container['type'] = $type;
+
+        return $this;
+    }
 
     /**
      * Gets url

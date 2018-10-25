@@ -53,7 +53,7 @@ interface ModelInterface
 
     /**
      * Array of property to format mappings. Used for (de)serialization
-     *
+     *ModelInterface
      * @return array
      */
     public static function openAPIFormats();
