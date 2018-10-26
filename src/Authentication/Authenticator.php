@@ -1,6 +1,6 @@
 <?php
 
-namespace Allegro\Authentication;
+namespace AllegroApi\Authentication;
 
 use GuzzleHttp\Client;
 
