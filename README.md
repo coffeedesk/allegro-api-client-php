@@ -16,8 +16,11 @@ https://developer.allegro.pl/documentation/
 
 To generate new clients and models run:
 ```
-docker run --rm -v ${PWD}/src:/local/out/php/lib openapitools/openapi-generator-cli generate \
--i https://developer.allegro.pl/swagger.yaml \
+docker run --rm \
+-v ${PWD}:/local/project \
+-v ${PWD}/src:/local/out/php/lib \
+openapitools/openapi-generator-cli generate \
+-i /local/project/swagger.yaml \
 -g php \
 -o /local/out/php \
 --invoker-package AllegroApi \
