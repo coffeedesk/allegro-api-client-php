@@ -31,24 +31,19 @@ docker run --rm -v ${PWD}/src:/local/out/php/lib openapitools/openapi-generator-
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
-// Configure API key authorization: apiKey
-$config = AllegroApi\Configuration::getDefaultConfiguration()->setApiKey('Api-Key', 'YOUR_API_KEY');
-// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Api-Key', 'Bearer');
-// Configure API key authorization: bearerAuth
-$config = AllegroApi\Configuration::getDefaultConfiguration()->setApiKey('Authorization', 'YOUR_API_KEY');
-// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-// $config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+$config = new \AllegroApi\Configuration();
+$config->setApiKey('Api-Key', 'YOUR_API_KEY');
+$config->setApiKey('Authorization', 'YOUR_API_KEY');
+$config->setApiKeyPrefix('Authorization', 'Bearer');
+
 
 $apiInstance = new AllegroApi\Client\AfterSalesServiceConditionsApi(
-    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-    // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
-$seller_id = 'seller_id_example'; // string | Filter by user id. You are allowed to get your implied warranties only.
-$limit = 56; // int | Limit
-$offset = 0; // int | Offset
+$seller_id = 'seller_id_example';
+$limit = 56;
+$offset = 0;
 
 try {
     $result = $apiInstance->getPublicSellerListingUsingGET($seller_id, $limit, $offset);
