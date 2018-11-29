@@ -1,5 +1,12 @@
 openapi: 3.0.0
-servers: []
+servers:
+- url: https://api.{environment}
+  variables:
+    environment:
+      default: allegro.pl
+      enum:
+      - allegro.pl         # Production server
+      - allegro.pl.allegrosandbox.pl     # Sandbox server
 info:
   description: 'https://developer.allegro.pl'
   version: '1.0'
@@ -9,43 +16,48 @@ info:
     email: api@allegro.pl
   license:
     name: Grupa Allegro Sp. z o. o.
+
 tags:
-  - name: offer-management
-  - name: offer-contacts
-  - name: user-ratings
-  - name: points-of-service
-  - name: after-sales-service-conditions
-  - name: pricing
-  - name: promotions
-  - name: offer-additional-services
-  - name: size-tables
-  - name: offer-variants
-  - name: offers-listing
-  - name: order-management
-  - name: disputes
-  - name: tags
+- name: offer-management
+- name: offer-contacts
+- name: user-ratings
+- name: points-of-service
+- name: after-sales-service-conditions
+- name: pricing
+- name: promotions
+- name: offer-additional-services
+- name: size-tables
+- name: offer-variants
+- name: offers-listing
+- name: order-management
+- name: disputes
+- name: tags
+
+security:
+- oAuth2AuthCode: []
+
 paths:
   '/offers/{offerId}/change-price-commands/{commandId}':
     put:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Modify the Buy Now price in an offer'
       description: 'Use this resource to change the Buy Now price in a single offer. More information about this resource you can find <a href="../../news/2016-08-01-Zmiana-ceny/" target="_blank">here.</a>'
       parameters:
-        - name: offerId
-          in: path
-          description: Offer identifier
-          required: true
-          schema:
-            type: string
-        - name: commandId
-          in: path
-          description: >-
-            Universally Unique  Identifier (UUID) you generate to enforce
-            idempotency. UUID specification: http://www.ietf.org/rfc/rfc4122.txt
-          required: true
-          schema:
-            type: string
+      - name: offerId
+        in: path
+        description: Offer identifier
+        required: true
+        schema:
+          type: string
+      - name: commandId
+        in: path
+        description: >-
+          Universally Unique  Identifier (UUID) you generate to enforce
+          idempotency. UUID specification: http://www.ietf.org/rfc/rfc4122.txt
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: The command was created and queued for processing
@@ -76,7 +88,7 @@ paths:
   /sale/offers:
     post:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Create a draft offer'
       description: 'Use this resource to create a draft offer draft. More information about this resource you can find <a href="../../sale/#step-6-draft" target="_blank">here.</a>'
       operationId: createOfferUsingPOST
@@ -103,86 +115,86 @@ paths:
         $ref: '#/components/requestBodies/Offer'
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: "Get seller's offers"
       description: Search seller's offers by given criteria. Accept header should be set to application/vnd.allegro.beta.v1+json
       operationId: searchOffersUsingGET
       parameters:
-        - name: seller.id
-          in: query
-          description: Seller id
-          required: true
-          schema:
-            type: string
-        - name: name
-          in: query
-          description: Text to search in offer title
-          required: false
-          schema:
-            type: string
-        - name: sellingMode.price.amount.gte
-          in: query
-          description: Minimal threshold of price
-          required: false
-          schema:
-            type: number
-        - name: sellingMode.price.amount.lte
-          in: query
-          description: Maximal threshold of price
-          required: false
-          schema:
-            type: number
-        - name: publication.status
-          in: query
-          description: Publication statuses may contain more than one comma separated values
-          required: false
-          schema:
-            type: string
-            enum:
-              - INACTIVE
-              - ACTIVE
-              - ACTIVATING
-              - ENDED
-        - name: sellingMode.format
-          in: query
-          required: false
-          description: Selling mode may contain more than one comma separated values
-          schema:
-            type: string
-            enum:
-              - BUY_NOW
-              - ADVERTISEMENT
-              - AUCTION
-        - name: sort
-          in: query
-          description: Sort direction
-          required: false
-          schema:
-            type: string
-            enum:
-              - sellingMode.price.amount (ASC)
-              - -sellingMode.price.amount (DESC)
-              - stock.sold (ASC)
-              - -stock.sold (DESC)
-              - stock.available (ASC)
-              - -stock.available (DESC)
-        - name: limit
-          in: query
-          required: false
-          description: "Maximum number of seller's offers in response (acceptable values: from 1 to 1000, default is 20)."
-          schema:
-            type: integer
-            format: int32
-            minimum: 1
-            maximum: 1000
-        - name: offset
-          in: query
-          required: false
-          description: Index of first returned seller's offers from all search results.
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
+      - name: seller.id
+        in: query
+        description: Seller id
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Text to search in offer title
+        required: false
+        schema:
+          type: string
+      - name: sellingMode.price.amount.gte
+        in: query
+        description: Minimal threshold of price
+        required: false
+        schema:
+          type: number
+      - name: sellingMode.price.amount.lte
+        in: query
+        description: Maximal threshold of price
+        required: false
+        schema:
+          type: number
+      - name: publication.status
+        in: query
+        description: Publication statuses may contain more than one comma separated values
+        required: false
+        schema:
+          type: string
+          enum:
+          - INACTIVE
+          - ACTIVE
+          - ACTIVATING
+          - ENDED
+      - name: sellingMode.format
+        in: query
+        required: false
+        description: Selling mode may contain more than one comma separated values
+        schema:
+          type: string
+          enum:
+          - BUY_NOW
+          - ADVERTISEMENT
+          - AUCTION
+      - name: sort
+        in: query
+        description: Sort direction
+        required: false
+        schema:
+          type: string
+          enum:
+          - sellingMode.price.amount (ASC)
+          - -sellingMode.price.amount (DESC)
+          - stock.sold (ASC)
+          - -stock.sold (DESC)
+          - stock.available (ASC)
+          - -stock.available (DESC)
+      - name: limit
+        in: query
+        required: false
+        description: "Maximum number of seller's offers in response (acceptable values: from 1 to 1000, default is 20)."
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000
+      - name: offset
+        in: query
+        required: false
+        description: Index of first returned seller's offers from all search results.
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
       responses:
         '200':
           description: OK
@@ -199,17 +211,17 @@ paths:
   '/sale/offers/{offerId}':
     put:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Complete a draft offer draft or edit ongoing offers'
       description: 'Use this resource to complete a draft offer draft or edit ongoing offers. More information about this resource you can find <a href="../../sale/#step-7-complete" target="_blank">here.</a>'
       operationId: updateOfferUsingPUT
       parameters:
-        - name: offerId
-          in: path
-          description: offerId
-          required: true
-          schema:
-            type: string
+      - name: offerId
+        in: path
+        description: offerId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Offer updated successfully
@@ -233,17 +245,17 @@ paths:
         $ref: '#/components/requestBodies/Offer'
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get all fields of the particular offer'
       description: 'Use this resource to retrieve all fields of the particular offer. More information about this resource you can find <a href="../../sale/#similar-offer" target="_blank">here.</a>'
       operationId: getOfferUsingGET
       parameters:
-        - name: offerId
-          in: path
-          description: offerId
-          required: true
-          schema:
-            type: string
+      - name: offerId
+        in: path
+        description: offerId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Offer returned successfully
@@ -261,17 +273,17 @@ paths:
           description: Not Found
     delete:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Delete a draft offer'
       description: 'Use this resource to delete a draft offer. More information about this resource you can find <a href="../../news/2018-10-09_Draft_delete/" target="_blank">here.</a>'
       operationId: deleteOfferUsingDELETE
       parameters:
-        - name: offerId
-          in: path
-          description: offerId
-          required: true
-          schema:
-            type: string
+      - name: offerId
+        in: path
+        description: offerId
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: No content
@@ -284,17 +296,17 @@ paths:
   '/sale/offer-publication-commands/{commandId}':
     put:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Modify multiple offers publication at once.'
       description: 'Use this resource to modify multiple offers publication at once. More information about this resource you can find <a href="../../sale/#step-8-offer-publication-commands" target="_blank">here.</a>'
       operationId: changePublicationStatusUsingPUT
       parameters:
-        - name: commandId
-          in: path
-          description: commandId
-          required: true
-          schema:
-            type: string
+      - name: commandId
+        in: path
+        description: commandId
+        required: true
+        schema:
+          type: string
       responses:
         '201':
           description: Command was registered
@@ -323,17 +335,17 @@ paths:
         required: true
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get a report summary for a particular commandId'
       description: 'Use this resource to retrieve information about the offer listing statuses. You will receive a summary with a number of correctly listed offers and errors. More information about this resource you can find <a href="../../sale/#step-8-offer-publication-commands" target="_blank">here.</a>'
       operationId: getPublicationReportUsingGET
       parameters:
-        - name: commandId
-          in: path
-          description: commandId
-          required: true
-          schema:
-            type: string
+      - name: commandId
+        in: path
+        description: commandId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: report was generated and successfully returned
@@ -350,31 +362,31 @@ paths:
   '/sale/offer-publication-commands/{commandId}/tasks':
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get a detailed report single command task'
       description: 'Use this resource to retrieve information about the offer statuses on the site (Defaults: limit = 100, offset = 0). More information about this resource you can find <a href="../../sale/#step-8-offer-publication-commands" target="_blank">here.</a>'
       operationId: getPublicationTasksUsingGET
       parameters:
-        - name: commandId
-          in: path
-          description: commandId
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: offset
-          required: false
-          schema:
-            type: integer
-            format: int32
+      - name: commandId
+        in: path
+        description: commandId
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
       responses:
         '200':
           description: Task status successfully returned
@@ -391,17 +403,17 @@ paths:
   '/users/{userId}/ratings-summary':
     get:
       tags:
-        - user-ratings
+      - user-ratings
       summary: Get user ratings-summary
       description: 'Use this resource to receive feedback statistics. More information about this resource you can find <a href="../../news/2017-10-09-News_informacje_o_ocenach/" target="_blank">here.</a>'
       operationId: getUserSummaryUsingGET
       parameters:
-        - name: userId
-          in: path
-          description: userId
-          required: true
-          schema:
-            type: string
+      - name: userId
+        in: path
+        description: userId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -418,46 +430,46 @@ paths:
   /sale/user-ratings:
     get:
       tags:
-        - user-ratings
+      - user-ratings
       summary: Get user-ratings
       description: 'Use this resource to receive your sales score. More information about this resource you can find <a href="../../news/2017-10-09-News_informacje_o_ocenach/" target="_blank">here.</a>'
       operationId: getUserRatingsUsingGET
       parameters:
-        - name: user.id
-          in: query
-          description: 'Filter by user id, you are allowed to get your ratings only'
-          required: true
-          schema:
-            type: string
-        - name: recommended
-          in: query
-          description: Filter by recommended
-          required: false
-          schema:
-            type: string
-            enum:
-              - 'true'
-              - 'false'
-        - name: offset
-          in: query
-          description: Offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-            maximum: 20000
-            default: 0
-        - name: limit
-          in: query
-          description: Limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-            minimum: 1
-            maximum: 100
-            default: 20
+      - name: user.id
+        in: query
+        description: 'Filter by user id, you are allowed to get your ratings only'
+        required: true
+        schema:
+          type: string
+      - name: recommended
+        in: query
+        description: Filter by recommended
+        required: false
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: offset
+        in: query
+        description: Offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 20000
+          default: 0
+      - name: limit
+        in: query
+        description: Limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 20
       responses:
         '200':
           description: OK
@@ -474,7 +486,7 @@ paths:
   /sale/offer-additional-services/groups:
     post:
       tags:
-        - offer-additional-services
+      - offer-additional-services
       summary: 'Create additional service group'
       description: 'Use this resource to creates a group of addtional services. More information about this resource you can find <a href="../../news/2017-10-25-News_uslugi_dodatkowe/#2" target="_blank">here.</a>'
       responses:
@@ -492,32 +504,32 @@ paths:
         $ref: '#/components/requestBodies/AdditionalServicesGroupRequest'
     get:
       tags:
-        - offer-additional-services
+      - offer-additional-services
       summary: 'Get additional service groups by user ID'
       description: 'Use this resource to retrieve a list of groups with additional services available to a given user which you may assign to offers. More information about this resource you can find <a href="../../news/2017-10-25-News_uslugi_dodatkowe/#4" target="_blank">here.</a>'
       parameters:
-        - name: offset
-          in: query
-          description: offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-        - name: limit
-          in: query
-          description: limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 1000
-        - name: user.id
-          in: query
-          description: User ID
-          required: true
-          schema:
-            type: string
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1000
+      - name: user.id
+        in: query
+        description: User ID
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -532,7 +544,7 @@ paths:
   /sale/loyalty/promotions:
     post:
       tags:
-        - promotions
+      - promotions
       summary: Creates a new promotion
       description: |
         This endpoint creates a new promotion. You can define the following types of promotions:
@@ -650,17 +662,6 @@ paths:
         }
         ```
       operationId: createPromotionUsingPOST_1
-      parameters:
-        - name: details
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: authenticated
-          in: query
-          required: false
-          schema:
-            type: boolean
       responses:
         '201':
           description: Successfully created the requested promotion
@@ -691,46 +692,36 @@ paths:
         required: true
     get:
       tags:
-        - promotions
+      - promotions
       summary: Get a list of promotions by user id
       description: >-
-       Get a list of promotions defined by the specified user. You can list
-        only your own promotions.
-        More information about this resource you can find <a href="../../news/2017-10-18-News_promocyjne_zestawy_ofert/#2" target="_blank">here (Bundles)</a> and <a href="../../news/2018-02-01-Rabaty_ilosciowe/#2" target="_blank">here (Multipack)</a>.
+        Get a list of promotions defined by the specified user. You can list
+         only your own promotions.
+         More information about this resource you can find <a href="../../news/2017-10-18-News_promocyjne_zestawy_ofert/#2" target="_blank">here (Bundles)</a> and <a href="../../news/2018-02-01-Rabaty_ilosciowe/#2" target="_blank">here (Multipack)</a>.
       operationId: listSellerPromotionsUsingGET_1
       parameters:
-        - name: user.id
-          in: query
-          description: user.id
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 50
-        - name: offset
-          in: query
-          description: offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-        - name: details
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: authenticated
-          in: query
-          required: false
-          schema:
-            type: boolean
+      - name: user.id
+        in: query
+        description: user.id
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
       responses:
         '200':
           description: Successfully returned the requested list of promotions
@@ -752,10 +743,304 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/Errors'
+  '/sale/loyalty/promotions/{promotionId}':
+    get:
+      tags:
+      - promotions
+      summary: Get a promotion by its id
+      description: 'Use this resource to returns the requested promotion. You need to use its unique id. More information about this resource you can find <a href="../../news/2017-10-18-News_promocyjne_zestawy_ofert/#3" target="_blank">here (Bundles)</a> and <a href="../../news/2018-02-01-Rabaty_ilosciowe/#3" target="_blank">here (Multipack)</a>.'
+      operationId: getPromotionUsingGET
+      parameters:
+      - name: promotionId
+        in: path
+        description: promotionId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully returned the requested promotion
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/SellerRebateDto'
+        '404':
+          description: Promotion not found
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+    delete:
+      tags:
+      - promotions
+      summary: Deactivate promotion by its id
+      description: 'Use this resource to deactivate the requested promotion. You need to use its unique id. More information about this resource you can find <a href="../../news/2017-10-18-News_promocyjne_zestawy_ofert/#4" target="_blank">here (Bundles)</a> and <a href="../../news/2018-02-01-Rabaty_ilosciowe/#4" target="_blank">here (Multipack)</a>.'
+      operationId: deactivatePromotionUsingDELETE
+      parameters:
+      - name: promotionId
+        in: path
+        description: promotionId
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Successfully deactivated the requested promotion
+        '404':
+          description: Promotion not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '422':
+          description: Promotion cannot be reactivated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  /sale/loyalty/promotion-campaigns:
+    post:
+      tags:
+      - promotions
+      summary: Creates promotion campaign application
+      description: >-
+        For an additional fee, you can place a discount mark on a list of
+        offers.
+                You have to define promotion id and campaign section giving LISTING_BADGE as the id.
+                Your promotion campaign application will be verified and you will be notified of the verification status via e-mail.
+                Fees will be charged in accordance with Annex No. 1 to the Daily deals zone regulations.
+                More information about this resource you can find <a href="../../offer_bundles/#11" target="_blank">here.</a>
+
+      operationId: addPromotionToCampaignUsingPOST
+      responses:
+        '202':
+          description: Promotion campaign application created successfully
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/PromotionCampaignResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '401':
+          description: Unauthorized
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: Forbidden
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '422':
+          description: >-
+            Validation failed - your request was correct, but the promotion
+            campaign application could not be created.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+      requestBody:
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/PromotionCampaignRequestDto'
+        description: request
+        required: true
+    get:
+      tags:
+      - promotions
+      summary: Get promotion campaigns
+      description: >-
+        Use this resource to retriev promotion campaigns. You can find promotion campaign by
+        promotion id. More information about this resource you can find <a href="../../offer_bundles/#13" target="_blank">here.</a>
+      operationId: getPromotionCampaignsUsingGET
+      parameters:
+      - name: promotion.id
+        in: query
+        description: The promotion unique id
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      responses:
+        '200':
+          description: Active or suspended promotion campaigns returned successfully
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/PromotionCampaignsResponseDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: Forbidden
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Promotion campaign not found
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+    delete:
+      tags:
+      - promotions
+      summary: Deletes campaign from promotion
+      description: Use this resource to deletes campaign from promotion by promotion id and campaign id. More information about this resource you can find <a href="../../offer_bundles/#16" target="_blank">here.</a>
+      operationId: deleteCampaignFromPromotionUsingDELETE
+      parameters:
+      - name: promotion.id
+        in: query
+        description: The promotion unique id
+        required: true
+        schema:
+          type: string
+      - name: campaign.id
+        in: query
+        description: The campaign unique id
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Campaign deletion requested successfully
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Promotion not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '422':
+          description: Campaign cannot be deleted
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  '/sale/loyalty/promotion-campaign-applications/{applicationId}':
+    get:
+      tags:
+      - promotions
+      summary: Get promotion campaign application by its id
+      description: Use this resource to retrieve promotion campaign application. You need to use its unique id. More information about this resource you can find <a href="../../offer_bundles/#12" target="_blank">here.</a>
+      operationId: getPromotionCampaignApplicationUsingGET
+      parameters:
+      - name: applicationId
+        in: path
+        description: The application unique id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully returned promotion campaign application
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                type: object
+        '303':
+          description: Promotion campaign application verified and accepted
+        '401':
+          description: Unauthorized
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: Forbidden
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Promotion campaign application not found
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+    delete:
+      tags:
+      - promotions
+      summary: Deletes promotion campaign application by its id
+      description: >-
+        Use this resource to deletes promotion campaign application by application id. You need to
+        use its unique id. More information about this resource you can find <a href="../../offer_bundles/#15" target="_blank">here.</a>
+      operationId: deletePromotionCampaignApplicationUsingDELETE
+      parameters:
+      - name: applicationId
+        in: path
+        description: The application unique id
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Promotion campaign application deletion requested successfully
+        '401':
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Promotion campaign application not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '422':
+          description: Promotion campaign application cannot be deleted
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
   /pricing/fee-preview:
     post:
       tags:
-        - pricing
+      - pricing
       summary: Calculates fee preview
       description: >-
         This endpoint calculates fees for a provided offer conditions.
@@ -803,17 +1088,17 @@ paths:
   '/sale/offer-modification-commands/{commandId}':
     put:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Modify multiple offers at once.'
       description: 'Use this resource to modify multiple offers at once. More information about this resource you can find <a href="../../news/2018-04-19-News_grupowa_edycja_ofert_update/#1" target="_blank">here.</a>'
       operationId: modificationCommandUsingPUT
       parameters:
-        - name: commandId
-          in: path
-          description: commandId
-          required: true
-          schema:
-            type: string
+      - name: commandId
+        in: path
+        description: commandId
+        required: true
+        schema:
+          type: string
       responses:
         '201':
           description: Command was registered
@@ -842,17 +1127,17 @@ paths:
         required: true
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get a report summary for a particular commandId'
       description: 'Use this resource to find out how many offers were edited within one {commandId}. You will receive a summary with a number of successfully edited offers. More information about this resource you can find <a href="../../news/2018-04-19-News_grupowa_edycja_ofert_update/#2" target="_blank">here.</a>'
       operationId: getGeneralReportUsingGET
       parameters:
-        - name: commandId
-          in: path
-          description: commandId
-          required: true
-          schema:
-            type: string
+      - name: commandId
+        in: path
+        description: commandId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: report was generated and successfully returned
@@ -869,31 +1154,31 @@ paths:
   '/sale/offer-modification-commands/{commandId}/tasks':
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get a detailed report for a single command task'
       description: 'Use this resource to retrieve a detailed summary of changes introduced within one {commandId} (defaults: limit = 100, offset = 0). More information about this resource you can find <a href="../../news/2018-04-19-News_grupowa_edycja_ofert_update/#2" target="_blank">here.</a>'
       operationId: getTasksUsingGET
       parameters:
-        - name: commandId
-          in: path
-          description: commandId
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: offset
-          required: false
-          schema:
-            type: integer
-            format: int32
+      - name: commandId
+        in: path
+        description: commandId
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
       responses:
         '200':
           description: Task status successfully returned
@@ -910,18 +1195,21 @@ paths:
   /sale/categories:
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get IDs of main Allegro categories'
       description: 'Use this resource to get IDs of main Allegro categories. More information about this resource you can find <a href="../../sale/#categories" target="_blank">here.</a>'
       operationId: getCategoriesUsingGET
+      security:
+      - oAuth2ClientCredentials: []
+      - oAuth2AuthCode: []
       parameters:
-        - name: parent.id
-          in: query
-          description: parent.id
-          required: false
-          schema:
-            type: string
-            default: 954b95b6-43cf-4104-8354-dea4d9b10ddf
+      - name: parent.id
+        in: query
+        description: parent.id
+        required: false
+        schema:
+          type: string
+          default: 954b95b6-43cf-4104-8354-dea4d9b10ddf
       responses:
         '200':
           description: OK
@@ -932,17 +1220,20 @@ paths:
   '/sale/categories/{categoryId}':
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get category by ID'
-      description: 'Use this resource to get the lowest tier category (remember – an offer can be listed in the lowest tier category if the category is marked “leaf”: true). More information about this resource you can find <a href="../../sale/#categories" target="_blank">here.</a>'
+      description: 'Use this resource to get the lowest tier category (remember – an offer can be listed in the lowest tier category if the category is marked “leaf”: true). More information about this resource you can find <a href="../../news/2018-07-09-Wielowariantowosc/#01" target="_blank">here.</a>'
       operationId: getCategoryUsingGET_1
+      security:
+      - oAuth2ClientCredentials: []
+      - oAuth2AuthCode: []
       parameters:
-        - name: categoryId
-          in: path
-          description: categoryId
-          required: true
-          schema:
-            type: string
+      - name: categoryId
+        in: path
+        description: categoryId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -953,17 +1244,20 @@ paths:
   '/sale/categories/{categoryId}/parameters':
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get parameters by category ID'
       description: 'Use this resource to get the lists of parameters that are supported by the category you indicated. Every time a list of parameters supported by the input category is returned. More information about this resource you can find <a href="../../sale/#parameters" target="_blank">here.</a>'
       operationId: getFlatParametersUsingGET_2
+      security:
+      - oAuth2ClientCredentials: []
+      - oAuth2AuthCode: []
       parameters:
-        - name: categoryId
-          in: path
-          description: categoryId
-          required: true
-          schema:
-            type: string
+      - name: categoryId
+        in: path
+        description: categoryId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -974,32 +1268,32 @@ paths:
   /sale/offer-additional-services/definitions:
     get:
       tags:
-        - offer-additional-services
+      - offer-additional-services
       summary: Get additional services definitions by user ID
       description: 'Use this resource to get additional services definitions by user ID. More information about this resource you can find <a href="../../news/2017-10-25-News_uslugi_dodatkowe/#1" target="_blank">here.</a>'
       parameters:
-        - name: offset
-          in: query
-          description: offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-        - name: limit
-          in: query
-          description: limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 100
-        - name: user.id
-          in: query
-          description: User ID
-          required: true
-          schema:
-            type: string
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      - name: user.id
+        in: query
+        description: User ID
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1014,16 +1308,16 @@ paths:
   /sale/shipping-rates:
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get a list of seller''s shipping rates'
       description: 'Use this resource to get a list of seller''s shipping rates. More information about this resource you can find <a href="../news/2018-08-14-Cenniki_dostawy/" target="_blank">here</a>.'
       parameters:
-        - name: seller.id
-          in: query
-          description: id of shipping rates owner
-          required: true
-          schema:
-            type: string
+      - name: seller.id
+        in: query
+        description: id of shipping rates owner
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1046,8 +1340,8 @@ paths:
               examples:
                 response:
                   value:
-                    - id: 758fcd59-fbfa-4453-ae07-4800d72c2ca5
-                      name: Mój cennik
+                  - id: 758fcd59-fbfa-4453-ae07-4800d72c2ca5
+                    name: Mój cennik
         '401':
           description: Authentication required
           content:
@@ -1062,16 +1356,16 @@ paths:
                 $ref: '#/components/schemas/Errors'
     post:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Create a new seller''s shipping rates set'
       description: 'Use this resource to create a new seller''s shipping rates set. More information about this resource you can find <a href="../news/2018-08-14-Cenniki_dostawy/" target="_blank">here</a>.'
       requestBody:
-          description: Shipping rates set
-          required: true
-          content:
-            application/vnd.allegro.public.v1+json:
-              schema:
-                $ref: '#/components/schemas/ShippingRatesSet'
+        description: Shipping rates set
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/ShippingRatesSet'
       responses:
         '201':
           description: OK
@@ -1094,16 +1388,16 @@ paths:
   '/sale/shipping-rates/{id}':
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get details of the given shipping rates set'
       description: 'Use this resource to get details of the given shipping rates set. More information about this resource you can find <a href="../news/2018-08-14-Cenniki_dostawy" target="_blank">here</a>.'
       parameters:
-        - name: id
-          in: path
-          description: id of shipping rates set
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: id of shipping rates set
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1117,18 +1411,18 @@ paths:
                     id: 758fcd59-fbfa-4453-ae07-4800d72c2ca6
                     name: Mój cennik
                     rates:
-                      - deliveryMethod:
-                          id: 758fcd59-fbfa-4453-ae07-4800d72c2ca5
-                        maxQuantityPerPackage: 6
-                        firstItemRate:
-                          amount: '12.00'
-                          currency: PLN
-                        nextItemRate:
-                          amount: '2.50'
-                          currency: PLN
-                        shippingTime:
-                          from: P1D
-                          to: P20D
+                    - deliveryMethod:
+                        id: 758fcd59-fbfa-4453-ae07-4800d72c2ca5
+                      maxQuantityPerPackage: 6
+                      firstItemRate:
+                        amount: '12.00'
+                        currency: PLN
+                      nextItemRate:
+                        amount: '2.50'
+                        currency: PLN
+                      shippingTime:
+                        from: P1D
+                        to: P20D
                     lastModified: '2018-04-05T12:20:23.974Z'
         '401':
           description: Authentication required
@@ -1150,23 +1444,23 @@ paths:
                 $ref: '#/components/schemas/Errors'
     put:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Edit seller''s shipping rates set'
       description: 'Use this resource to edit a new seller''s shipping rates set. More information about this resource you can find <a href="../news/2018-08-14-Cenniki_dostawy/" target="_blank">here</a>.'
       parameters:
-        - name: id
-          in: path
-          description: id of shipping rates set
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: id of shipping rates set
+        required: true
+        schema:
+          type: string
       requestBody:
-          description: Shipping rates set
-          required: true
-          content:
-            application/vnd.allegro.public.v1+json:
-              schema:
-                $ref: "#/components/schemas/ShippingRatesSet"
+        description: Shipping rates set
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: "#/components/schemas/ShippingRatesSet"
       responses:
         '200':
           description: OK
@@ -1189,7 +1483,7 @@ paths:
   '/points-of-service':
     post:
       tags:
-        - points-of-service
+      - points-of-service
       summary: 'Create a point of service'
       description: 'Use this resource to create a point of servic. More information about this resource you can find <a href="../../news/2017-08-11-Punkty_odbioru/#1" target="_blank">here.</a>'
       responses:
@@ -1213,16 +1507,16 @@ paths:
         $ref: '#/components/requestBodies/Pos'
     get:
       tags:
-        - points-of-service
+      - points-of-service
       summary: 'Get a list of points of service by seller ID'
       description: 'Use this resource to get a list of points of service by seller ID. More information about this resource you can find <a href="../../news/2017-08-11-Punkty_odbioru/#3" target="_blank">here.</a>'
       parameters:
-        - name: seller.id
-          in: query
-          description: User ID
-          required: true
-          schema:
-            type: string
+      - name: seller.id
+        in: query
+        description: User ID
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1241,16 +1535,16 @@ paths:
   '/points-of-service/{id}':
     get:
       tags:
-        - points-of-service
+      - points-of-service
       summary: 'Get details of a point of service for a given ID'
       description: 'Use this resource to get a details of a point of service for a given ID. More information about this resource you can find <a href="../../news/2017-08-11-Punkty_odbioru/#4" target="_blank">here.'
       parameters:
-        - name: id
-          in: path
-          description: Point of service ID
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: Point of service ID
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1270,18 +1564,18 @@ paths:
                 $ref: '#/components/schemas/Errors'
     put:
       tags:
-        - points-of-service
+      - points-of-service
       summary: 'Modify a point of service'
       description: 'Use this resource to modify a point of service. More information about this resource you can find <a href="../../news/2017-08-11-Punkty_odbioru/#2" target="_blank">here.'
       parameters:
-        - name: id
-          in: path
-          description: >-
-            Point of service ID. Must match values with 'id' property from the
-            body.
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: >-
+          Point of service ID. Must match values with 'id' property from the
+          body.
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1303,16 +1597,16 @@ paths:
         $ref: '#/components/requestBodies/Pos'
     delete:
       tags:
-        - points-of-service
+      - points-of-service
       summary: 'Delete a point of service'
       description: 'Use this resource to delete a point of service. More information about this resource you can find <a href="../../news/2017-08-11-Punkty_odbioru/#5" target="_blank">here.'
       parameters:
-        - name: id
-          in: path
-          description: Point of service ID
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: Point of service ID
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: No content
@@ -1329,7 +1623,7 @@ paths:
   /sale/offer-contacts:
     post:
       tags:
-        - offer-contacts
+      - offer-contacts
       summary: 'Create a new contact'
       description: 'Use this resource to create a new contact. More information about this resource you can find <a href="../../news/2018-01-17-news_zarzadzanie_kontaktami/#1" target="_blank">here.</a>'
       responses:
@@ -1352,16 +1646,16 @@ paths:
         required: true
     get:
       tags:
-        - offer-contacts
+      - offer-contacts
       summary: Get details of many contacts
       description: 'Use this resource to get details of many contacts. More information about this resource you can find <a href="../../news/2018-01-17-news_zarzadzanie_kontaktami/#4" target="_blank">here.</a>'
       parameters:
-        - name: seller.id
-          in: query
-          description: id of contacts owner
-          required: true
-          schema:
-            type: string
+      - name: seller.id
+        in: query
+        description: id of contacts owner
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1376,16 +1670,16 @@ paths:
   '/sale/offer-contacts/{id}':
     get:
       tags:
-        - offer-contacts
+      - offer-contacts
       summary: Get contact details
       description: 'Use this resource to get contact details. More information about this resource you can find <a href="../../news/2018-01-17-news_zarzadzanie_kontaktami/#3" target="_blank">here.</a>'
       parameters:
-        - name: id
-          in: path
-          description: Contact id
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: Contact id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1401,16 +1695,16 @@ paths:
           description: Not Found
     put:
       tags:
-        - offer-contacts
+      - offer-contacts
       summary: Modify contact details
       description: 'Use this resource to modify contact details. More information about this resource you can find <a href="../../news/2018-01-17-news_zarzadzanie_kontaktami/#2" target="_blank">here.</a>'
       parameters:
-        - name: id
-          in: path
-          description: Contact id
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        description: Contact id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1434,9 +1728,12 @@ paths:
   /sale/delivery-methods:
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: 'Get a list of available delivery methods'
       description: 'Use this resource to get a list of available delivery methods. More information about this resource you can find <a href="../news/2018-08-14-Cenniki_dostawy/" target="_blank">here</a>.'
+      security:
+      - oAuth2ClientCredentials: []
+      - oAuth2AuthCode: []
       responses:
         '200':
           description: OK
@@ -1459,15 +1756,15 @@ paths:
                         paymentPolicy:
                           type: string
                           enum:
-                            - IN_ADVANCE
-                            - CASH_ON_DELIVERY
+                          - IN_ADVANCE
+                          - CASH_ON_DELIVERY
                           description: Whether the payment is to be collected in advance or on delivery
               examples:
                 response:
                   value:
-                    - id: 758fcd59-fbfa-4453-ae07-4800d72c2ca5
-                      name: List polecony priorytetowy
-                      paymentPolicy: IN_ADVANCE
+                  - id: 758fcd59-fbfa-4453-ae07-4800d72c2ca5
+                    name: List polecony priorytetowy
+                    paymentPolicy: IN_ADVANCE
         '401':
           description: Authentication required
           content:
@@ -1477,16 +1774,16 @@ paths:
   '/sale/offer-additional-services/groups/{groupId}':
     get:
       tags:
-        - offer-additional-services
+      - offer-additional-services
       summary: Get additional services group for a given ID
       description: 'Use this resource to get additional services group for a given ID. More information about this resource you can find <a href="../../news/2017-10-25-News_uslugi_dodatkowe/#5" target="_blank">here.</a>'
       parameters:
-        - name: groupId
-          in: path
-          description: Additional Service Group ID
-          required: true
-          schema:
-            type: string
+      - name: groupId
+        in: path
+        description: Additional Service Group ID
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1500,16 +1797,16 @@ paths:
           description: Not Found
     put:
       tags:
-        - offer-additional-services
+      - offer-additional-services
       summary: Modify existing additional service group
       description: 'Use this resource to modify existing additional service group. More information about this resource you can find <a href="../../news/2017-10-25-News_uslugi_dodatkowe/#3" target="_blank">here.</a>'
       parameters:
-        - name: groupId
-          in: path
-          description: additional service group ID
-          required: true
-          schema:
-            type: string
+      - name: groupId
+        in: path
+        description: additional service group ID
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1526,17 +1823,17 @@ paths:
   '/sale/size-tables/{tableId}':
     get:
       tags:
-        - size-tables
+      - size-tables
       summary: 'Get selected size table'
       description: 'Use this resource to get selected size table. More information about this resource you can find <a href="../../news/2018-04-19-News_Tabele_rozmiarow/" target="_blank">here.</a>'
       operationId: getTableUsingGET
       parameters:
-        - name: tableId
-          in: path
-          description: tableId
-          required: true
-          schema:
-            type: string
+      - name: tableId
+        in: path
+        description: tableId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Size table returned successfully
@@ -1553,32 +1850,32 @@ paths:
   /after-sales-service-conditions/return-policies:
     get:
       tags:
-        - after-sales-service-conditions
+      - after-sales-service-conditions
       summary: Get seller return policies listing
       description: 'Use this resource to get seller return policies listing. More information about this resource you can find <a href="../../news/2017-04-05-News_warunki_oferty/" target="_blank">here.</a>'
       operationId: getPublicSellerListingUsingGET_1
       parameters:
-        - name: seller.id
-          in: query
-          description: Filter by user id. You are allowed to get your return policies only.
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: Limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: Offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
+      - name: seller.id
+        in: query
+        description: Filter by user id. You are allowed to get your return policies only.
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
       responses:
         '200':
           description: OK
@@ -1595,17 +1892,17 @@ paths:
   /sale/size-tables:
     get:
       tags:
-        - size-tables
+      - size-tables
       summary: 'Get all size tables assigned to a seller account'
       description: 'Use this resource to get all size tables assigned to a seller account. More information about this resource you can find <a href="../../news/2018-04-19-News_Tabele_rozmiarow/" target="_blank">here.</a>'
       operationId: getTablesUsingGET
       parameters:
-        - name: user.id
-          in: query
-          description: user.id
-          required: true
-          schema:
-            type: string
+      - name: user.id
+        in: query
+        description: user.id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Size tables returned successfully
@@ -1622,32 +1919,32 @@ paths:
   /after-sales-service-conditions/implied-warranties:
     get:
       tags:
-        - after-sales-service-conditions
+      - after-sales-service-conditions
       summary: Get seller implied warranties listing
       description: 'Use this resource to get seller implied warranties listing. More information about this resource you can find <a href="../../news/2017-04-05-News_warunki_oferty/" target="_blank">here.</a>'
       operationId: getPublicSellerListingUsingGET
       parameters:
-        - name: seller.id
-          in: query
-          description: Filter by user id. You are allowed to get your implied warranties only.
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: Limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: Offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
+      - name: seller.id
+        in: query
+        description: Filter by user id. You are allowed to get your implied warranties only.
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
       responses:
         '200':
           description: OK
@@ -1665,7 +1962,7 @@ paths:
   /pricing/offer-quotes:
     get:
       tags:
-        - pricing
+      - pricing
       summary: Get current offer quotes for authenticated user and list of offers.
       description: >-
         This endpoint returns current offer quotes (listing and promo fees)
@@ -1674,21 +1971,21 @@ paths:
         <br/>2018-07-18 - resource update <a href="../../news/2018-07-18-Aktualizacja_Zasob_do_sprawdzania_daty_oplaty/" target="_blank">here.</a>
       operationId: offerQuotesPublicUsingGET
       parameters:
-        - name: name
-          in: query
-          required: false
-          schema:
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: offer.id
+        in: query
+        description: 'List of offer ids, maximum 20 values'
+        required: true
+        allowEmptyValue: false
+        explode: true
+        schema:
+          type: array
+          items:
             type: string
-        - name: offer.id
-          in: query
-          description: 'List of offer ids, maximum 20 values'
-          required: true
-          allowEmptyValue: false
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
       responses:
         '200':
           description: Returns current offer quotes
@@ -1710,110 +2007,35 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/ErrorsHolder'
-  '/sale/loyalty/promotions/{promotionId}':
-    get:
-      tags:
-        - promotions
-      summary: Get a promotion by its id
-      description: 'Use this resource to returns the requested promotion. You need to use its unique id. More information about this resource you can find <a href="../../news/2017-10-18-News_promocyjne_zestawy_ofert/#3" target="_blank">here (Bundles)</a> and <a href="../../news/2018-02-01-Rabaty_ilosciowe/#3" target="_blank">here (Multipack)</a>.'
-      operationId: getPromotionUsingGET
-      parameters:
-        - name: promotionId
-          in: path
-          description: promotionId
-          required: true
-          schema:
-            type: string
-        - name: details
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: authenticated
-          in: query
-          required: false
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: Successfully returned the requested promotion
-          content:
-            application/vnd.allegro.public.v1+json:
-              schema:
-                $ref: '#/components/schemas/SellerRebateDto'
-        '404':
-          description: Promotion not found
-          content:
-            application/vnd.allegro.public.v1+json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-    delete:
-      tags:
-        - promotions
-      summary: Deactivate promotion by its id
-      description: 'Use this resource to deactivate the requested promotion. You need to use its unique id. More information about this resource you can find <a href="../../news/2017-10-18-News_promocyjne_zestawy_ofert/#4" target="_blank">here (Bundles)</a> and <a href="../../news/2018-02-01-Rabaty_ilosciowe/#4" target="_blank">here (Multipack)</a>.'
-      operationId: deactivatePromotionUsingDELETE
-      parameters:
-        - name: promotionId
-          in: path
-          description: promotionId
-          required: true
-          schema:
-            type: string
-        - name: details
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: authenticated
-          in: query
-          required: false
-          schema:
-            type: boolean
-      responses:
-        '204':
-          description: Successfully deactivated the requested promotion
-        '404':
-          description: Promotion not found
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Errors'
-        '422':
-          description: Promotion cannot be reactivated
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Errors'
   /after-sales-service-conditions/warranties:
     get:
       tags:
-        - after-sales-service-conditions
+      - after-sales-service-conditions
       summary: Get seller warranties listing
       description: 'Use this resource to get seller warranties listing. More information about this resource you can find <a href="../../news/2017-04-05-News_warunki_oferty/" target="_blank">here.</a>'
       operationId: getPublicSellerListingUsingGET_2
       parameters:
-        - name: seller.id
-          in: query
-          description: Filter by user id. You are allowed to get your warranties only.
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: Limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: Offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
+      - name: seller.id
+        in: query
+        description: Filter by user id. You are allowed to get your warranties only.
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Offset
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
       responses:
         '200':
           description: OK
@@ -1830,19 +2052,19 @@ paths:
   '/sale/offer-variants/{setId}':
     put:
       tags:
-        - offer-variants
+      - offer-variants
       summary: '[BETA] Create or update variant set'
       description: >-
         [BETA] Use this resource to create or update variant set.
         More information about this resource you can find <a href="../../news/2018-07-09-Wielowariantowosc/#03" target="_blank">here.</a>
       operationId: createOrUpdateVariantSet
       parameters:
-        - name: setId
-          in: path
-          description: Variant set id
-          required: true
-          schema:
-            type: string
+      - name: setId
+        in: path
+        description: Variant set id
+        required: true
+        schema:
+          type: string
       responses:
         '201':
           description: Variant set created or updated successfully
@@ -1856,17 +2078,17 @@ paths:
         $ref: '#/components/requestBodies/VariantSetRequest'
     get:
       tags:
-        - offer-variants
+      - offer-variants
       summary: '[BETA] Get variant set'
       description: '[BETA] Use this resource to get variant set by set id. More information about this resource you can find <a href="../../news/2018-07-09-Wielowariantowosc/#04" target="_blank">here.</a>'
       operationId: getVariantSet
       parameters:
-        - name: setId
-          in: path
-          description: setId
-          required: true
-          schema:
-            type: string
+      - name: setId
+        in: path
+        description: setId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Variant set returned successfully
@@ -1882,7 +2104,7 @@ paths:
           description: Not Found
     delete:
       tags:
-        - offer-variants
+      - offer-variants
       summary: '[BETA] Delete variant set'
       description: >-
         [BETA] Use this resource to delete variant set by id.
@@ -1890,12 +2112,12 @@ paths:
         More information about this resource you can find <a href="../../news/2018-07-09-Wielowariantowosc/#05" target="_blank">here.</a>
       operationId: deleteVariantSet
       parameters:
-        - name: setId
-          in: path
-          description: Variant set id
-          required: true
-          schema:
-            type: string
+      - name: setId
+        in: path
+        description: Variant set id
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: Variant set deleted successfully
@@ -1908,7 +2130,7 @@ paths:
   '/sale/offer-variants':
     get:
       tags:
-        - offer-variants
+      - offer-variants
       summary: '[BETA] Get created variant sets.'
       description: >-
         [BETA] Use this resource to get created variant sets.
@@ -1916,36 +2138,36 @@ paths:
         More information about this resource you can find <a href="../../news/2018-07-09-Wielowariantowosc/" target="_blank">here.</a>
       operationId: getVariantSets
       parameters:
-        - name: user.id
-          in: query
-          description: Filter by user id, you are allowed to get your variant sets only.
-          required: true
-          schema:
-            type: string
-        - name: offset
-          in: query
-          description: Index of first returned variant set.
-          required: false
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-        - name: limit
-          in: query
-          description: Maximum number of returned variant sets.
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 50
-        - name: query
-          in: query
-          description: Filter variant sets by name or offer id.
-          required: false
-          schema:
-            type: string
-            maxLength: 50
+      - name: user.id
+        in: query
+        description: Filter by user id, you are allowed to get your variant sets only.
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: Index of first returned variant set.
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: limit
+        in: query
+        description: Maximum number of returned variant sets.
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 50
+      - name: query
+        in: query
+        description: Filter variant sets by name or offer id.
+        required: false
+        schema:
+          type: string
+          maxLength: 50
       responses:
         '200':
           description: Variant sets returned successfully
@@ -1984,7 +2206,7 @@ paths:
   /offers/listing:
     get:
       tags:
-        - offers-listing
+      - offers-listing
       summary: Get search results combined with navigable categories and filters.
       description: >-
         Use this resource to get a list of offers according to provided parameters.
@@ -1993,84 +2215,87 @@ paths:
         parameters are defined in the filters entity.
         More information about this resource you can find <a href="../../news/2018-07-03-Listing_ofert/" target="_blank">here.</a>
       operationId: getListing
+      security:
+      - oAuth2ClientCredentials: []
+      - oAuth2AuthCode: []
       parameters:
-        - name: category.id
-          in: query
-          description: The category identifier to search.
-          required: false
-          schema:
-            type: string
-        - name: phrase
-          in: query
-          description: Search phrase.
-          required: false
-          schema:
-            type: string
-        - name: seller.id
-          in: query
-          description: >-
-            Identifier of the seller. May be provided more than once. Only items
-            of provided sellers are returned.
-          required: false
-          schema:
-            type: string
-        - name: searchMode
-          in: query
-          description: >-
-            Search mode. Allowed values: *REGULAR* - searching for a phrase in
-            the title of offers; *DESCRIPTIONS* - searching for a phrase in
-            titles and offers descriptions; *CLOSED* -  searching for a phrase in
-            titles of closed offers. Default *REGULAR*.
-          required: false
-          schema:
-            type: string
-        - name: offset
-          in: query
-          description: >-
-            Index of first returned offer from all search results. Must be
-            multiple of *limit*.
-          required: false
-          schema:
-            type: integer
-        - name: limit
-          in: query
-          description: >-
-            Maximum number of offers in response (acceptable values: from 0 to
-            100, default is 60).
-          required: false
-          schema:
-            type: integer
-        - name: sort
-          in: query
-          description: >-
-            Search results sorting order. Allowed values (+ or no prefix means
-            ascending order, - prefix means descending order): relevance,
-            +price, -price, +withDeliveryPrice, -withDeliveryPrice, -popularity,
-            +endTime, -startTime. The default sorting order is relevancy.
-          required: false
-          schema:
-            type: string
-        - name: include
-          in: query
-          description: >-
-            Specify parts that should be included in the output. Allowed values
-            are names of top level entities and *all* as an alias to all
-            entities. By default, all top level entities are included. Use "-"
-            prefix to exclude entity. Example:
-            *include=-all&include=filters&include=sort* - returns only filters
-            and sort entities.
-          required: false
-          schema:
-            type: string
-        - name: fallback
-          in: query
-          description: >-
-            Defines behaviour of searching when no results with exact phrase
-            match are found: *true* - related (not exact) results are returned;
-            *false* - empty results are returned. The default is true.
-          required: false
-          schema:
-            type: boolean
+      - name: category.id
+        in: query
+        description: The category identifier to search.
+        required: false
+        schema:
+          type: string
+      - name: phrase
+        in: query
+        description: Search phrase.
+        required: false
+        schema:
+          type: string
+      - name: seller.id
+        in: query
+        description: >-
+          Identifier of the seller. May be provided more than once. Only items
+          of provided sellers are returned.
+        required: false
+        schema:
+          type: string
+      - name: searchMode
+        in: query
+        description: >-
+          Search mode. Allowed values: *REGULAR* - searching for a phrase in
+          the title of offers; *DESCRIPTIONS* - searching for a phrase in
+          titles and offers descriptions; *CLOSED* -  searching for a phrase in
+          titles of closed offers. Default *REGULAR*.
+        required: false
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: >-
+          Index of first returned offer from all search results. Must be
+          multiple of *limit*.
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: >-
+          Maximum number of offers in response (acceptable values: from 0 to
+          100, default is 60).
+        required: false
+        schema:
+          type: integer
+      - name: sort
+        in: query
+        description: >-
+          Search results sorting order. Allowed values (+ or no prefix means
+          ascending order, - prefix means descending order): relevance,
+          +price, -price, +withDeliveryPrice, -withDeliveryPrice, -popularity,
+          +endTime, -startTime. The default sorting order is relevancy.
+        required: false
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: >-
+          Specify parts that should be included in the output. Allowed values
+          are names of top level entities and *all* as an alias to all
+          entities. By default, all top level entities are included. Use "-"
+          prefix to exclude entity. Example:
+          *include=-all&include=filters&include=sort* - returns only filters
+          and sort entities.
+        required: false
+        schema:
+          type: string
+      - name: fallback
+        in: query
+        description: >-
+          Defines behaviour of searching when no results with exact phrase
+          match are found: *true* - related (not exact) results are returned;
+          *false* - empty results are returned. The default is true.
+        required: false
+        schema:
+          type: boolean
       responses:
         '200':
           description: Successful operation.
@@ -2093,40 +2318,40 @@ paths:
   '/order/events':
     get:
       tags:
-        - order-management
+      - order-management
       summary: '[BETA] Get order events'
       description: >-
-              [BETA] Use this resource to returns events that allow you to monitor actions which clients perform, i.e.
-              making a purchase, filling in the checkout form (FOD), finishing payment process, making a surcharge.
-              More information about this resource you can find <a href="/orders/#02" target="_blank">here.</a>
+        [BETA] Use this resource to returns events that allow you to monitor actions which clients perform, i.e.
+        making a purchase, filling in the checkout form (FOD), finishing payment process, making a surcharge.
+        More information about this resource you can find <a href="/orders/#02" target="_blank">here.</a>
       parameters:
-        - name: from
-          in: query
-          description: 'You can use the event ID to retrieve subsequent chunks of events'
-          required: false
-          schema:
+      - name: from
+        in: query
+        description: 'You can use the event ID to retrieve subsequent chunks of events'
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: >-
+          Specify array of event types for filtering.
+          Allowed values are:
+            * `BOUGHT`: purchase without checkout form filled in
+            * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change
+            * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing.
+        required: false
+        schema:
+          type: array
+          items:
             type: string
-        - name: type
-          in: query
-          description: >-
-            Specify array of event types for filtering.
-            Allowed values are:
-              * `BOUGHT`: purchase without checkout form filled in
-              * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change
-              * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing.
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        - name: limit
-          in: query
-          description: 'Limit in the range of 1-1000'
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 100
+      - name: limit
+        in: query
+        description: 'Limit in the range of 1-1000'
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 100
       responses:
         '200':
           description: OK
@@ -2139,12 +2364,12 @@ paths:
   '/order/event-stats':
     get:
       tags:
-        - order-management
+      - order-management
       summary: '[BETA] Get order event statistics'
       description: >-
-              [BETA] Use this resource to returns object that contains event id and occurrence date of the latest event.
-              It gives you current starting point for reading events.
-              More information about this resource you can find <a href="/orders/#02" target="_blank">here.</a>
+        [BETA] Use this resource to returns object that contains event id and occurrence date of the latest event.
+        It gives you current starting point for reading events.
+        More information about this resource you can find <a href="/orders/#02" target="_blank">here.</a>
       responses:
         '200':
           description: OK
@@ -2157,49 +2382,49 @@ paths:
   '/order/checkout-forms':
     get:
       tags:
-        - order-management
+      - order-management
       summary: '[BETA] Get order list'
       description: >-
-              [BETA] Use this resource to get an order list.
-              More information about this resource you can find <a href="/orders/#03" target="_blank">here.</a>
+        [BETA] Use this resource to get an order list.
+        More information about this resource you can find <a href="/orders/#03" target="_blank">here.</a>
       parameters:
-        - name: offset
-          in: query
-          description: Index of first returned checkout-form from all search results.
-          required: false
-          schema:
-            type: integer
-        - name: limit
-          in: query
-          description: >-
-            Maximum number of checkout-forms in response (acceptable values: from 0 to
-            100, default is 100).
-          required: false
-          schema:
-            type: integer
-        - name: status
-          in: query
-          schema:
-            type: string
-          description: >
-            Specify status value that checkout-forms must have to be included in the output.
-            Allowed values are:
-              * `BOUGHT`: purchase without checkout form filled in
-              * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change
-              * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing.
-              * `ALL`: return all checkout-forms
-        - name: lineItems.boughtAt.lte
-          in: query
-          schema:
-            type: string
-            format: date-time
-          description: The upper bound of date time range from which checkout forms will be taken.
-        - name: lineItems.boughtAt.gte
-          in: query
-          schema:
-            type: string
-            format: date-time
-          description: The lower bound of date time range from which checkout forms will be taken.
+      - name: offset
+        in: query
+        description: Index of first returned checkout-form from all search results.
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: >-
+          Maximum number of checkout-forms in response (acceptable values: from 0 to
+          100, default is 100).
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+        description: >
+          Specify status value that checkout-forms must have to be included in the output.
+          Allowed values are:
+            * `BOUGHT`: purchase without checkout form filled in
+            * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change
+            * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing.
+            * `ALL`: return all checkout-forms
+      - name: lineItems.boughtAt.lte
+        in: query
+        schema:
+          type: string
+          format: date-time
+        description: The upper bound of date time range from which checkout forms will be taken.
+      - name: lineItems.boughtAt.gte
+        in: query
+        schema:
+          type: string
+          format: date-time
+        description: The lower bound of date time range from which checkout forms will be taken.
       responses:
         '200':
           description: OK
@@ -2218,20 +2443,20 @@ paths:
   '/order/checkout-forms/{id}':
     get:
       tags:
-        - order-management
+      - order-management
       summary: '[BETA] Get order details'
       description: >-
-              [BETA] Use this resource to get an order details.
-              More information about this resource you can find <a href="/orders/#04" target="_blank">here.</a>
+        [BETA] Use this resource to get an order details.
+        More information about this resource you can find <a href="/orders/#04" target="_blank">here.</a>
       parameters:
-        - name: id
-          in: path
-          description: Checkout Form id
-          required: true
-          schema:
-            type: string
-            format: uuid
-          example: "29738e61-7f6a-11e8-ac45-09db60ede9d6"
+      - name: id
+        in: path
+        description: Checkout Form id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: "29738e61-7f6a-11e8-ac45-09db60ede9d6"
       responses:
         '200':
           description: OK
@@ -2244,180 +2469,180 @@ paths:
         '404':
           description: Not Found
   '/sale/disputes':
-      get:
-        tags:
-          - disputes
-        summary: Get the list of the disputes
-        description: >-
-                Use this resource to get the list of your disputes.
-                More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetAll" target="_blank">here.</a>
-        parameters:
-          - name: checkoutForm.id
-            in: query
-            description: CheckoutForm id
-            required: false
-            schema:
-              type: string
-              format: uuid
-            example: "29738e61-7f6a-11e8-ac45-09db60ede9d6"
-        responses:
-          '200':
-            description: OK
-            content:
-              application/vnd.allegro.public.v1+json:
-                schema:
-                  $ref: '#/components/schemas/DisputeListResponse'
-          '401':
-            description: Unauthorized
-          '404':
-            description: Not Found
+    get:
+      tags:
+      - disputes
+      summary: Get the list of the disputes
+      description: >-
+        Use this resource to get the list of your disputes.
+        More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetAll" target="_blank">here.</a>
+      parameters:
+      - name: checkoutForm.id
+        in: query
+        description: CheckoutForm id
+        required: false
+        schema:
+          type: string
+          format: uuid
+        example: "29738e61-7f6a-11e8-ac45-09db60ede9d6"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/DisputeListResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
   '/sale/disputes/{disputeId}':
-        get:
-          tags:
-            - disputes
-          summary: Get a single dispute by id
-          description: >-
-                  Use this resource to get a single dispute. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetOne" target="_blank">here.</a>
-          parameters:
-            - name: disputeId
-              in: path
-              description: Id of the dispute
-              required: true
+    get:
+      tags:
+      - disputes
+      summary: Get a single dispute by id
+      description: >-
+        Use this resource to get a single dispute. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetOne" target="_blank">here.</a>
+      parameters:
+      - name: disputeId
+        in: path
+        description: Id of the dispute
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '/sale/disputes/{disputeId}/messages':
+    get:
+      tags:
+      - disputes
+      summary: Get the list of messages within dispute
+      description: >-
+        Use this resource to get the list of messages within dispute. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetMessage" target="_blank">here.</a>
+      parameters:
+      - name: disputeId
+        in: path
+        description: Id of the dispute
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/DisputeMessageList'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+      - disputes
+      summary: Post a message
+      parameters:
+      - name: disputeId
+        in: path
+        description: Id of the dispute
+        required: true
+        schema:
+          type: string
+          format: uuid
+      description: >-
+        Use this resource to post a message in certain dispute. At least one of fields: 'text', 'attachment' has to be present. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#PostMessage" target="_blank">here.</a>
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/DisputeMessage'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable entity
+      requestBody:
+        $ref: '#/components/requestBodies/MessageRequest'
+  '/sale/dispute-attachments':
+    post:
+      tags:
+      - disputes
+      summary: Post an attachment declaration
+      description: >-
+        Use this resource to post an attachment declaration. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#PostAttach" target="_blank">here.</a>
+      responses:
+        '201':
+          description: CREATED
+          headers:
+            Location:
               schema:
                 type: string
-                format: uuid
-          responses:
-            '200':
-              description: OK
-              content:
-                application/vnd.allegro.public.v1+json:
-                  schema:
-                    $ref: '#/components/schemas/Dispute'
-            '401':
-              description: Unauthorized
-            '403':
-              description: Forbidden
-            '404':
-              description: Not Found
-  '/sale/disputes/{disputeId}/messages':
-      get:
-        tags:
-          - disputes
-        summary: Get the list of messages within dispute
-        description: >-
-                  Use this resource to get the list of messages within dispute. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetMessage" target="_blank">here.</a>
-        parameters:
-          - name: disputeId
-            in: path
-            description: Id of the dispute
-            required: true
-            schema:
-              type: string
-              format: uuid
-        responses:
-          '200':
-            description: OK
-            content:
-              application/vnd.allegro.public.v1+json:
-                schema:
-                  $ref: '#/components/schemas/DisputeMessageList'
-          '401':
-            description: Unauthorized
-          '403':
-            description: Forbidden
-          '404':
-            description: Not Found
-      post:
-        tags:
-          - disputes
-        summary: Post a message
-        parameters:
-          - name: disputeId
-            in: path
-            description: Id of the dispute
-            required: true
-            schema:
-              type: string
-              format: uuid
-        description: >-
-                Use this resource to post a message in certain dispute. At least one of fields: 'text', 'attachment' has to be present. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#PostMessage" target="_blank">here.</a>
-        responses:
-          '201':
-            description: CREATED
-            content:
-              application/vnd.allegro.public.v1+json:
-                schema:
-                  $ref: '#/components/schemas/DisputeMessage'
-          '401':
-            description: Unauthorized
-          '403':
-            description: Forbidden
-          '404':
-            description: Not Found
-          '422':
-            description: Unprocessable entity
-        requestBody:
-          $ref: '#/components/requestBodies/MessageRequest'
-  '/sale/dispute-attachments':
-      post:
-        tags:
-          - disputes
-        summary: Post an attachment declaration
-        description: >-
-                Use this resource to post an attachment declaration. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#PostAttach" target="_blank">here.</a>
-        responses:
-          '201':
-            description: CREATED
-            headers:
-              Location:
-                schema:
-                  type: string
-                description: Use this URL to perform PUT request with binary data file coherent with the attachment declaration.
-            content:
-              application/vnd.allegro.public.v1+json:
-                schema:
-                  $ref: '#/components/schemas/DisputeAttachmentId'
-          '401':
-            description: Unauthorized
-          '403':
-            description: Forbidden
-          '422':
-            description: Unprocessable entity
-        requestBody:
-          $ref: '#/components/requestBodies/AttachmentDeclaration'
+              description: Use this URL to perform PUT request with binary data file coherent with the attachment declaration.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/DisputeAttachmentId'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable entity
+      requestBody:
+        $ref: '#/components/requestBodies/AttachmentDeclaration'
   '/sale/dispute-attachments/{attachmentId}':
-      get:
-        tags:
-          - disputes
-        summary: Get an attachment
-        description: >-
-                Use this resource to get an attachment. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetAttach" target="_blank">here.</a>
-        parameters:
-          - name: attachmentId
-            in: path
-            description: Id of the attachment resource
-            required: true
-            schema:
-              type: string
-              format: uuid
-        responses:
-          '200':
-            description: OK
-            content:
-              '*/*':
-                schema:
-                  type: string
-                  format: binary
-          '401':
-            description: Unauthorized
-          '403':
-            description: Forbidden
-          '404':
-            description: Not Found
+    get:
+      tags:
+      - disputes
+      summary: Get an attachment
+      description: >-
+        Use this resource to get an attachment. More information about this resource you can find <a href="../../news/2018-09-18-Dyskusje/#GetAttach" target="_blank">here.</a>
+      parameters:
+      - name: attachmentId
+        in: path
+        description: Id of the attachment resource
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
   '/order/line-item-id-mappings':
     get:
       tags:
-        - order-management
+      - order-management
       summary: "[BETA] Find mapping for line item id"
       description: "[BETA] Allows mapping identifiers from dealId to lineItemId and vice-versa. One of defined query parameters has to be provided."
       operationId: "findMapping"
@@ -2451,7 +2676,7 @@ paths:
   '/sale/offer-tags':
     post:
       tags:
-        - tags
+      - tags
       summary: Creates tag
       description: |
         Use this resource to creates a new tag. More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#DodajDoKonta" target="_blank">here.</a>
@@ -2498,32 +2723,32 @@ paths:
         required: true
     get:
       tags:
-        - tags
+      - tags
       summary: 'Get a list of tags'
       description: >-
-       Use this resource to get a list of tags defined by the specified user (Defaults: limit = 1000, offset = 0). More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#PobierzTagi" target="_blank">here.</a>
+        Use this resource to get a list of tags defined by the specified user (Defaults: limit = 1000, offset = 0). More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#PobierzTagi" target="_blank">here.</a>
       operationId: listSellerTagsGET_1
       parameters:
-        - name: user.id
-          in: query
-          description: user.id
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: offset
-          required: false
-          schema:
-            type: integer
-            format: int32
+      - name: user.id
+        in: query
+        description: user.id
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: limit
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: offset
+        required: false
+        schema:
+          type: integer
+          format: int32
       responses:
         '200':
           description: Successfully returned the requested list of tags
@@ -2547,17 +2772,17 @@ paths:
   '/sale/offer-tags/{tagId}':
     delete:
       tags:
-        - tags
+      - tags
       summary: Delete tag
       description: 'Use this resource to delete the tag. More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#UsunTagZKonta" target="_blank">here.</a>'
       operationId: deleteTagUsingDELETE
       parameters:
-        - name: tagId
-          in: path
-          description: tagId
-          required: true
-          schema:
-            type: string
+      - name: tagId
+        in: path
+        description: tagId
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: Successfully deleted tag
@@ -2581,17 +2806,17 @@ paths:
                 $ref: '#/components/schemas/Errors'
     put:
       tags:
-        - tags
+      - tags
       summary: Modify tag
       description: 'Use this resource to updates a tag. More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#ZmienNazwe" target="_blank">here.</a>'
       operationId: updateTagPUT
       parameters:
-        - name: tagId
-          in: path
-          description: tagId
-          required: true
-          schema:
-            type: string
+      - name: tagId
+        in: path
+        description: tagId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Successfully updated the requested tag
@@ -2625,18 +2850,18 @@ paths:
   '/sale/offers/{offerId}/tags':
     post:
       tags:
-        - offer-management
+      - offer-management
       summary: Assigns tag to offer
       description: |
         Use this resource to assigns a tag to offer. More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#PrzypiszTagiDoOferty" target="_blank">here.</a>
       operationId: assignTagToOfferPOST
       parameters:
-        - name: offerId
-          in: path
-          description: offerId
-          required: true
-          schema:
-            type: string
+      - name: offerId
+        in: path
+        description: offerId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Successfully assigned tag to offer
@@ -2675,18 +2900,18 @@ paths:
         required: true
     get:
       tags:
-        - offer-management
+      - offer-management
       summary: Get a list of tags assigned to offer
       description: >-
-       Use this resource to get a list of tags assigned to offer. More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#PobierzTagiZOferty" target="_blank">here.</a>
+        Use this resource to get a list of tags assigned to offer. More information about this resource you can find <a href="../../news/2018-09-24-Tagi-zalaczniki/#PobierzTagiZOferty" target="_blank">here.</a>
       operationId: listAssignedOfferTagsGET
       parameters:
-        - name: offerId
-          in: path
-          description: offerId
-          required: true
-          schema:
-            type: string
+      - name: offerId
+        in: path
+        description: offerId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Successfully returned list of assigned tags
@@ -2706,20 +2931,24 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/Errors'
-security:
-  - apiKey: []
-    bearerAuth: []
+
 components:
   securitySchemes:
-    apiKey:
-      type: apiKey
-      name: Api-Key
-      in: header
-    bearerAuth:            # arbitrary name for the security scheme
-      type: apiKey
-      name: Authorization
-      in: header
-
+    oAuth2AuthCode:
+      type: oauth2
+      description: For more information, see https://developer.allegro.pl/auth
+      flows:
+        authorizationCode:
+          authorizationUrl: https://allegro.pl/auth/oauth/authorize
+          tokenUrl: https://allegro.pl/auth/oauth/token
+          scopes: {}
+    oAuth2ClientCredentials:
+      type: oauth2
+      description: For more information, see https://developer.allegro.pl/auth
+      flows:
+        clientCredentials:
+          tokenUrl: https://allegro.pl/auth/oauth/token
+          scopes: {}
   requestBodies:
     Pos:
       content:
@@ -2861,16 +3090,16 @@ components:
     AdditionalServiceDefinitionRequest:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
     AdditionalServiceRequest:
       type: object
       required:
-        - configurations
-        - definition
-        - description
+      - configurations
+      - definition
+      - description
       properties:
         definition:
           $ref: '#/components/schemas/AdditionalServiceDefinitionRequest'
@@ -2900,8 +3129,8 @@ components:
     AdditionalServicesGroupRequest:
       type: object
       required:
-        - additionalServices
-        - name
+      - additionalServices
+      - name
       properties:
         name:
           type: string
@@ -2938,10 +3167,10 @@ components:
     Address:
       type: object
       required:
-        - city
-        - countryCode
-        - state
-        - zipCode
+      - city
+      - countryCode
+      - state
+      - zipCode
       properties:
         street:
           type: string
@@ -2967,8 +3196,8 @@ components:
     Answer:
       type: object
       required:
-        - createdAt
-        - message
+      - createdAt
+      - message
       properties:
         createdAt:
           type: string
@@ -3029,22 +3258,22 @@ components:
     Benefit:
       type: object
       required:
-        - specification
+      - specification
       properties:
         specification:
           $ref: '#/components/schemas/BenefitSpecification'
     BenefitSpecification:
       type: object
       required:
-        - type
+      - type
       properties:
         type:
           type: string
     Caption:
       type: object
       required:
-        - index
-        - value
+      - index
+      - value
       properties:
         index:
           type: string
@@ -3097,7 +3326,7 @@ components:
     Cells:
       type: object
       required:
-        - cells
+      - cells
       properties:
         cells:
           type: array
@@ -3107,7 +3336,7 @@ components:
     ChangePrice:
       type: object
       required:
-        - input
+      - input
       properties:
         id:
           $ref: '#/components/schemas/UUID'
@@ -3119,7 +3348,7 @@ components:
     ChangePriceInput:
       type: object
       required:
-        - buyNowPrice
+      - buyNowPrice
       properties:
         buyNowPrice:
           $ref: '#/components/schemas/MonetaryAmount'
@@ -3127,7 +3356,7 @@ components:
     ChangePriceWithoutOutput:
       type: object
       required:
-        - input
+      - input
       properties:
         id:
           $ref: '#/components/schemas/UUID'
@@ -3175,7 +3404,7 @@ components:
     CompatibilityList:
       type: object
       required:
-        - items
+      - items
       properties:
         items:
           type: array
@@ -3241,8 +3470,8 @@ components:
     Coordinates:
       type: object
       required:
-        - lat
-        - lon
+      - lat
+      - lon
       properties:
         lat:
           type: number
@@ -3284,31 +3513,38 @@ components:
       type: object
       description: 'One of: TextItem, ImageItem'
       oneOf:
-        - $ref: '#/components/schemas/DescriptionSectionItemText'
-        - $ref: '#/components/schemas/DescriptionSectionItemImage'
+      - $ref: '#/components/schemas/DescriptionSectionItemText'
+      - $ref: '#/components/schemas/DescriptionSectionItemImage'
+      properties:
+        type:
+          type: string
+      required:
+      - type
       discriminator:
         propertyName: type
         mapping:
           TEXT: '#/components/schemas/DescriptionSectionItemText'
           IMAGE: '#/components/schemas/DescriptionSectionItemImage'
     DescriptionSectionItemText:
-      type: object
-      properties:
-        type:
-          type: string
-          example: 'TEXT'
-        content:
-          type: string
+      allOf:
+      - $ref: '#/components/schemas/DescriptionSectionItem'
+      - type: object
+        properties:
+          type:
+            type: string
+            default: 'TEXT'
+          content:
+            type: string
     DescriptionSectionItemImage:
-      type: object
-      properties:
-        type:
-          type: string
-          example: 'IMAGE'
-        url:
-          type: string
-      required:
-      - type
+      allOf:
+      - $ref: '#/components/schemas/DescriptionSectionItem'
+      - type: object
+        properties:
+          type:
+            type: string
+            default: 'IMAGE'
+          url:
+            type: string
     EmailRequest:
       type: object
       properties:
@@ -3379,7 +3615,7 @@ components:
     Header:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
@@ -3444,10 +3680,10 @@ components:
           type: string
           description: 'Invoice type: VAT, VAT_MARGIN, WITHOUT_VAT, NO_INVOICE'
           enum:
-            - VAT
-            - VAT_MARGIN
-            - WITHOUT_VAT
-            - NO_INVOICE
+          - VAT
+          - VAT_MARGIN
+          - WITHOUT_VAT
+          - NO_INVOICE
     ModificationPromotion:
       type: object
       properties:
@@ -3497,13 +3733,13 @@ components:
       type: string
       description: offer attachment type
       enum:
-        - MANUAL
-        - SPECIAL_OFFER_RULES
-        - COMPETITION_RULES
-        - BOOK_EXCERPT
-        - USER_MANUAL
-        - INSTALLATION_INSTRUCTIONS
-        - GAME_INSTRUCTIONS
+      - MANUAL
+      - SPECIAL_OFFER_RULES
+      - COMPETITION_RULES
+      - BOOK_EXCERPT
+      - USER_MANUAL
+      - INSTALLATION_INSTRUCTIONS
+      - GAME_INSTRUCTIONS
     AttachmentFile:
       type: object
       properties:
@@ -3514,7 +3750,7 @@ components:
     Offer:
       type: object
       required:
-        - name
+      - name
       properties:
         additionalServices:
           $ref: '#/components/schemas/JustId'
@@ -3590,7 +3826,7 @@ components:
     OfferCriterion:
       type: object
       required:
-        - type
+      - type
       properties:
         type:
           type: string
@@ -3606,7 +3842,7 @@ components:
           type: string
           description: 'Criteria type: CONTAINS_OFFERS'
           enum:
-            - CONTAINS_OFFERS
+          - CONTAINS_OFFERS
       description: Contains offers criteria
     OfferDescription:
       type: object
@@ -3652,9 +3888,9 @@ components:
     OpenHour:
       type: object
       required:
-        - dayOfWeek
-        - from
-        - to
+      - dayOfWeek
+      - from
+      - to
       properties:
         dayOfWeek:
           type: string
@@ -3670,8 +3906,8 @@ components:
     Order:
       type: object
       required:
-        - id
-        - offers
+      - id
+      - offers
       properties:
         id:
           type: string
@@ -3684,7 +3920,7 @@ components:
     Parameter:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
@@ -3700,21 +3936,6 @@ components:
             type: string
       description: Offer's parameter
     CategoryParameter:
-      type: object
-      required:
-        - type
-      discriminator:
-        propertyName: type
-        mapping:
-          INTEGER: '#/components/schemas/IntegerCategoryParameter'
-          FLOAT: '#/components/schemas/FloatCategoryParameter'
-          STRING: '#/components/schemas/StringCategoryParameter'
-          DICTIONARY: '#/components/schemas/DictionaryCategoryParameter'
-      anyOf:
-        - $ref: '#/components/schemas/IntegerCategoryParameter'
-        - $ref: '#/components/schemas/FloatCategoryParameter'
-        - $ref: '#/components/schemas/StringCategoryParameter'
-        - $ref: '#/components/schemas/DictionaryCategoryParameter'
       properties:
         id:
           type: string
@@ -3741,70 +3962,82 @@ components:
       title: CategoryParameterOptions
     DictionaryCategoryParameter:
       allOf:
-        - $ref: '#/components/schemas/CategoryParameter'
-        - type: object
-          properties:
-            restrictions:
+      - $ref: '#/components/schemas/CategoryParameter'
+      - type: object
+        properties:
+          type:
+            type: string
+            default: 'DICTIONARY'
+          restrictions:
+            type: object
+            properties:
+              multipleChoices:
+                type: boolean
+          dictionary:
+            type: array
+            items:
               type: object
               properties:
-                multipleChoices:
-                  type: boolean
-            dictionary:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  value:
-                    type: string
+                id:
+                  type: string
+                value:
+                  type: string
     IntegerCategoryParameter:
       allOf:
-        - $ref: '#/components/schemas/CategoryParameter'
-        - type: object
-          properties:
-            restrictions:
-              type: object
-              properties:
-                min:
-                  type: integer
-                max:
-                  type: integer
-                range:
-                  type: boolean
+      - $ref: '#/components/schemas/CategoryParameter'
+      - type: object
+        properties:
+          type:
+            type: string
+            default: 'INTEGER'
+          restrictions:
+            type: object
+            properties:
+              min:
+                type: integer
+              max:
+                type: integer
+              range:
+                type: boolean
     FloatCategoryParameter:
       allOf:
-        - $ref: '#/components/schemas/CategoryParameter'
-        - type: object
-          properties:
-            restrictions:
-              type: object
-              properties:
-                min:
-                  type: integer
-                max:
-                  type: integer
-                range:
-                  type: boolean
-                precision:
-                  type: integer
+      - $ref: '#/components/schemas/CategoryParameter'
+      - type: object
+        properties:
+          type:
+            type: string
+            default: 'FLOAT'
+          restrictions:
+            type: object
+            properties:
+              min:
+                type: integer
+              max:
+                type: integer
+              range:
+                type: boolean
+              precision:
+                type: integer
     StringCategoryParameter:
       allOf:
-        - $ref: '#/components/schemas/CategoryParameter'
-        - type: object
-          properties:
-            restrictions:
-              type: object
-              properties:
-                minLength:
-                  type: integer
-                maxLength:
-                  type: integer
+      - $ref: '#/components/schemas/CategoryParameter'
+      - type: object
+        properties:
+          type:
+            type: string
+            default: 'STRING'
+          restrictions:
+            type: object
+            properties:
+              minLength:
+                type: integer
+              maxLength:
+                type: integer
     ParameterRangeValue:
       type: object
       required:
-        - from
-        - to
+      - from
+      - to
       properties:
         from:
           type: string
@@ -3817,11 +4050,22 @@ components:
         parameters:
           type: array
           items:
-            $ref: '#/components/schemas/CategoryParameter'
+            discriminator:
+              propertyName: type
+              mapping:
+                INTEGER: '#/components/schemas/IntegerCategoryParameter'
+                FLOAT: '#/components/schemas/FloatCategoryParameter'
+                STRING: '#/components/schemas/StringCategoryParameter'
+                DICTIONARY: '#/components/schemas/DictionaryCategoryParameter'
+              oneOf:
+                - $ref: '#/components/schemas/IntegerCategoryParameter'
+                - $ref: '#/components/schemas/FloatCategoryParameter'
+                - $ref: '#/components/schemas/StringCategoryParameter'
+                - $ref: '#/components/schemas/DictionaryCategoryParameter'
     Payment:
       type: object
       required:
-        - method
+      - method
       properties:
         method:
           type: string
@@ -3845,12 +4089,12 @@ components:
     Pos:
       type: object
       required:
-        - address
-        - confirmationType
-        - name
-        - openHours
-        - status
-        - type
+      - address
+      - confirmationType
+      - name
+      - openHours
+      - status
+      - type
       properties:
         id:
           type: string
@@ -3910,8 +4154,8 @@ components:
     Price:
       type: object
       required:
-        - amount
-        - currency
+      - amount
+      - currency
       properties:
         amount:
           type: string
@@ -3923,13 +4167,13 @@ components:
       type: string
       description: Command processing status
       enum:
-        - QUEUEING
-        - RUNNING
-        - VALIDATED_AND_RUNNING
-        - RUNNING_BUT_WITH_ERRORS
-        - SUCCESSFUL
-        - PARTIAL_SUCCESS
-        - ERROR
+      - QUEUEING
+      - RUNNING
+      - VALIDATED_AND_RUNNING
+      - RUNNING_BUT_WITH_ERRORS
+      - SUCCESSFUL
+      - PARTIAL_SUCCESS
+      - ERROR
     Promotion:
       type: object
       properties:
@@ -3946,10 +4190,10 @@ components:
     PublicTableDto:
       type: object
       required:
-        - headers
-        - name
-        - orientation
-        - values
+      - headers
+      - name
+      - orientation
+      - values
       properties:
         headers:
           type: array
@@ -3964,8 +4208,8 @@ components:
         orientation:
           type: string
           enum:
-            - HORIZONTAL
-            - VERTICAL
+          - HORIZONTAL
+          - VERTICAL
         values:
           type: array
           items:
@@ -3974,8 +4218,8 @@ components:
     PublicTableImageDto:
       type: object
       required:
-        - captions
-        - url
+      - captions
+      - url
       properties:
         captions:
           type: array
@@ -3987,7 +4231,7 @@ components:
     PublicTablesDto:
       type: object
       required:
-        - tables
+      - tables
       properties:
         tables:
           type: array
@@ -4031,10 +4275,10 @@ components:
     Rates:
       type: object
       required:
-        - delivery
-        - deliveryCost
-        - description
-        - service
+      - delivery
+      - deliveryCost
+      - description
+      - service
       properties:
         delivery:
           type: integer
@@ -4042,44 +4286,44 @@ components:
           example: 5
           description: Delivery rate value
           enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
         deliveryCost:
           type: integer
           format: int32
           example: 5
           description: Delivery cost rate value
           enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
         description:
           type: integer
           format: int32
           example: 5
           description: Description rate value
           enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
         service:
           type: integer
           format: int32
           example: 5
           description: Service rate value
           enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
     Reference:
       type: object
       properties:
@@ -4088,7 +4332,7 @@ components:
     Removal:
       type: object
       required:
-        - possibleTo
+      - possibleTo
       properties:
         possibleTo:
           type: string
@@ -4101,8 +4345,8 @@ components:
     RemovalRequest:
       type: object
       required:
-        - createdAt
-        - message
+      - createdAt
+      - message
       properties:
         createdAt:
           type: string
@@ -4128,15 +4372,15 @@ components:
     Seller:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
     SellerCreateRebateRequestDto:
       type: object
       required:
-        - benefits
-        - offerCriteria
+      - benefits
+      - offerCriteria
       properties:
         benefits:
           type: array
@@ -4149,10 +4393,10 @@ components:
     SellerRebateDto:
       type: object
       required:
-        - benefits
-        - id
-        - offerCriteria
-        - status
+      - benefits
+      - id
+      - offerCriteria
+      - status
       properties:
         benefits:
           type: array
@@ -4169,14 +4413,14 @@ components:
         status:
           type: string
           enum:
-            - ACTIVE
-            - INACTIVE
-            - SUSPENDED
+          - ACTIVE
+          - INACTIVE
+          - SUSPENDED
     SellerRebatesDto:
       type: object
       required:
-        - promotions
-        - totalCount
+      - promotions
+      - totalCount
       properties:
         promotions:
           type: array
@@ -4266,10 +4510,10 @@ components:
                   type: string
                   description: 'ISO 8601 duration format, e.g. P3D for 3 days'
           required:
-            - deliveryMethod
-            - firstItemRate
-            - maxQuantityPerPackage
-            - nextItemRate
+          - deliveryMethod
+          - firstItemRate
+          - maxQuantityPerPackage
+          - nextItemRate
         lastModified:
           type: string
           description: >-
@@ -4287,8 +4531,8 @@ components:
     Summary:
       type: object
       required:
-        - total
-        - unique
+      - total
+      - unique
       properties:
         total:
           type: integer
@@ -4334,8 +4578,8 @@ components:
     User:
       type: object
       required:
-        - id
-        - login
+      - id
+      - login
       properties:
         id:
           type: string
@@ -4346,11 +4590,11 @@ components:
     UserRating:
       type: object
       required:
-        - buyer
-        - comment
-        - createdAt
-        - id
-        - recommended
+      - buyer
+      - comment
+      - createdAt
+      - id
+      - recommended
       properties:
         answer:
           description: 'Seller''s answer, if null seller did not publish answer'
@@ -4391,7 +4635,7 @@ components:
     UserRatingListResponse:
       type: object
       required:
-        - ratings
+      - ratings
       properties:
         ratings:
           type: array
@@ -4403,9 +4647,9 @@ components:
     UserRatingSummaryResponse:
       type: object
       required:
-        - notRecommended
-        - recommended
-        - recommendedPercentage
+      - notRecommended
+      - recommended
+      - recommendedPercentage
       properties:
         averageRates:
           $ref: '#/components/schemas/AverageRates'
@@ -4422,7 +4666,7 @@ components:
     Validation:
       type: object
       required:
-        - errors
+      - errors
       properties:
         errors:
           type: array
@@ -4454,9 +4698,9 @@ components:
     Describes_listing_fee:
       type: object
       required:
-        - fee
-        - name
-        - type
+      - fee
+      - name
+      - type
       properties:
         fee:
           $ref: '#/components/schemas/Fee'
@@ -4467,9 +4711,9 @@ components:
     Describes_success_commission_fee:
       type: object
       required:
-        - fee
-        - name
-        - type
+      - fee
+      - name
+      - type
       properties:
         fee:
           $ref: '#/components/schemas/Fee'
@@ -4490,8 +4734,8 @@ components:
     Parameters_used_for_preview_price._Note_that_quantity_or_soldQuantity_have_to_be_set_for_offer.type_advertisement_.:
       type: object
       required:
-        - category
-        - unitPrice
+      - category
+      - unitPrice
       properties:
         category:
           description: Leaf category id
@@ -4500,19 +4744,19 @@ components:
           type: string
           description: 'Offer condition, if is new, used or other.'
           enum:
-            - NEW
-            - USED
-            - OTHER
+          - NEW
+          - USED
+          - OTHER
         duration:
           type: string
           enum:
-            - PT72H
-            - PT120H
-            - PT168H
-            - PT240H
-            - PT336H
-            - PT480H
-            - PT720H
+          - PT72H
+          - PT120H
+          - PT168H
+          - PT240H
+          - PT336H
+          - PT480H
+          - PT720H
         hasAnyQuantity:
           type: boolean
         numberOfBigPhotos:
@@ -4546,9 +4790,9 @@ components:
             Offer type. 'type' or 'shop' fields must be provided. Takes
             precedence over 'shop' field
           enum:
-            - shop
-            - offer
-            - advertisement
+          - shop
+          - offer
+          - advertisement
         unitPrice:
           type: number
         bold:
@@ -4570,8 +4814,8 @@ components:
           type: string
           description: Action to perform
           enum:
-            - ACTIVATE
-            - END
+          - ACTIVATE
+          - END
         scheduledFor:
           type: string
           format: date-time
@@ -4614,8 +4858,8 @@ components:
     Wraps_listing_and_commissions_fees:
       type: object
       required:
-        - commissions
-        - quotes
+      - commissions
+      - quotes
       properties:
         commissions:
           type: array
@@ -4628,9 +4872,9 @@ components:
     VariantSet:
       type: object
       required:
-        - offers
-        - name
-        - parameters
+      - offers
+      - name
+      - parameters
       properties:
         offers:
           type: array
@@ -4645,21 +4889,21 @@ components:
       example:
         name: 't-shirt'
         offers:
-          - id: '2'
-            colorPattern: red
-          - id: '3'
-            colorPattern: red
-          - id: '4'
-            colorPattern: blue
-          - id: '5'
-            colorPattern: blue
+        - id: '2'
+          colorPattern: red
+        - id: '3'
+          colorPattern: red
+        - id: '4'
+          colorPattern: blue
+        - id: '5'
+          colorPattern: blue
         parameters:
-          - 'color/pattern'
-          - '21'
+        - 'color/pattern'
+        - '21'
     VariantSet_Offer:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
@@ -4670,7 +4914,7 @@ components:
     VariantSet_Parameter:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
@@ -4687,10 +4931,10 @@ components:
       example:
         count: 10
         offerVariants:
-          - id: 459fd49f-461f-4230-b22a-daff449b8548
-            name: t-shirts
-          - id: 70e6effe-7ae6-45f6-8566-80867f466d0a
-            name: shoes
+        - id: 459fd49f-461f-4230-b22a-daff449b8548
+          name: t-shirts
+        - id: 70e6effe-7ae6-45f6-8566-80867f466d0a
+          name: shoes
     VariantSets_VariantSet:
       type: object
       properties:
@@ -4960,7 +5204,7 @@ components:
         id:
           type: string
           description: Identifier of the filter. Should be used as query parameter key,
-           optionally followed by idSuffix from parameter value (only for NUMERIC filters).
+            optionally followed by idSuffix from parameter value (only for NUMERIC filters).
         type:
           type: string
           description: >-
@@ -5081,9 +5325,9 @@ components:
     OfferListingDtoV1.OfferType:
       type: string
       enum:
-        - 'BUY_NOW'
-        - 'AUCTION'
-        - 'ADVERTISEMENT'
+      - 'BUY_NOW'
+      - 'AUCTION'
+      - 'ADVERTISEMENT'
     OfferListingDtoV1.SaleInfo:
       type: object
       properties:
@@ -5127,14 +5371,14 @@ components:
     OfferListingDtoV1.OfferStatus:
       type: string
       enum:
-        - 'INACTIVE'
-        - 'ACTIVATING'
-        - 'ACTIVE'
-        - 'ENDED'
+      - 'INACTIVE'
+      - 'ACTIVATING'
+      - 'ACTIVE'
+      - 'ENDED'
     OrderEventsList:
       type: object
       required:
-        - events
+      - events
       properties:
         events:
           type: array
@@ -5144,10 +5388,10 @@ components:
     OrderEvent:
       type: object
       required:
-        - id
-        - order
-        - type
-        - occuredAt
+      - id
+      - order
+      - type
+      - occuredAt
       properties:
         id:
           type: string
@@ -5165,9 +5409,9 @@ components:
     OrderEventData:
       type: object
       required:
-        - buyer
-        - lineItems
-        - seller
+      - buyer
+      - lineItems
+      - seller
       properties:
         seller:
           $ref: '#/components/schemas/SellerReference'
@@ -5183,7 +5427,7 @@ components:
     SellerReference:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
@@ -5192,8 +5436,8 @@ components:
     OfferReference:
       type: object
       required:
-        - id
-        - name
+      - id
+      - name
       properties:
         id:
           type: string
@@ -5206,10 +5450,10 @@ components:
     BuyerReference:
       type: object
       required:
-        - email
-        - login
-        - guest
-        - id
+      - email
+      - login
+      - guest
+      - id
       properties:
         id:
           type: string
@@ -5229,10 +5473,10 @@ components:
     OrderLineItem:
       type: object
       required:
-        - offer
-        - price
-        - id
-        - quantity
+      - offer
+      - price
+      - id
+      - quantity
       properties:
         id:
           type: string
@@ -5266,8 +5510,8 @@ components:
     LatestOrderEvent:
       type: object
       required:
-        - id
-        - occuredAt
+      - id
+      - occuredAt
       properties:
         id:
           type: string
@@ -5281,29 +5525,29 @@ components:
     CheckoutFormReference:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
           example: "88ae369b-8f65-4fc4-9c77-bedf604a2e2b"
       description: Checkout form identifier
     CheckoutFormStatus:
-        enum:
-          - BOUGHT
-          - FILLED_IN
-          - READY_FOR_PROCESSING
-        example: "READY_FOR_PROCESSING"
-        description: >
-          Describes status of the form delivery and purchase options based on payment and purchase status.
-          * `BOUGHT` - purchase without checkout form filled in
-          * `FILLED_IN` - checkout form filled in but payment is not completed yet so data could still change
-          * `READY_FOR_PROCESSING` - payment completed. Purchase is ready for processing.
+      enum:
+      - BOUGHT
+      - FILLED_IN
+      - READY_FOR_PROCESSING
+      example: "READY_FOR_PROCESSING"
+      description: >
+        Describes status of the form delivery and purchase options based on payment and purchase status.
+        * `BOUGHT` - purchase without checkout form filled in
+        * `FILLED_IN` - checkout form filled in but payment is not completed yet so data could still change
+        * `READY_FOR_PROCESSING` - payment completed. Purchase is ready for processing.
     CheckoutForms:
       type: object
       required:
-        - count
-        - totalCount
-        - checkoutForms
+      - count
+      - totalCount
+      - checkoutForms
       properties:
         checkoutForms:
           type: array
@@ -5323,13 +5567,14 @@ components:
     CheckoutForm:
       type: object
       required:
-        - id
-        - buyer
-        - status
-        - invoice
-        - lineItems
-        - surcharges
-        - summary
+      - id
+      - buyer
+      - status
+      - invoice
+      - lineItems
+      - surcharges
+      - discounts
+      - summary
       properties:
         id:
           type: string
@@ -5358,15 +5603,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CheckoutFormPaymentReference'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckoutFormDiscount'
         summary:
           $ref: '#/components/schemas/CheckoutFormSummary'
     CheckoutFormBuyerReference:
       type: object
       required:
-        - email
-        - login
-        - guest
-        - id
+      - email
+      - login
+      - guest
+      - id
       properties:
         id:
           type: string
@@ -5394,8 +5643,8 @@ components:
     CheckoutFormPaymentReference:
       type: object
       required:
-        - id
-        - type
+      - id
+      - type
       properties:
         id:
           type: string
@@ -5417,15 +5666,15 @@ components:
       description: Payment type
       type: string
       enum:
-       - CASH_ON_DELIVERY
-       - WIRE_TRANSFER
-       - ONLINE
+      - CASH_ON_DELIVERY
+      - WIRE_TRANSFER
+      - ONLINE
     CheckoutFormPaymentProvider:
       description: Payment provider
       type: string
       enum:
-        - P24
-        - PAYU
+      - P24
+      - PAYU
     CheckoutFormDeliveryReference:
       type: object
       properties:
@@ -5437,15 +5686,19 @@ components:
           $ref: '#/components/schemas/CheckoutFormDeliveryPickupPoint'
         cost:
           $ref: '#/components/schemas/Price'
+        smart:
+          type: boolean
+          description: Buyer used a SMART option
+          example: true
     CheckoutFormDeliveryAddress:
       type: object
       required:
-        - firstName
-        - lastName
-        - street
-        - city
-        - zipCode
-        - countryCode
+      - firstName
+      - lastName
+      - street
+      - city
+      - zipCode
+      - countryCode
       properties:
         firstName:
           type: string
@@ -5525,7 +5778,7 @@ components:
     CheckoutFormInvoiceInfo:
       type: object
       required:
-        - required
+      - required
       properties:
         required:
           type: boolean
@@ -5536,10 +5789,10 @@ components:
     CheckoutFormInvoiceAddress:
       type: object
       required:
-        - street
-        - city
-        - zipCode
-        - countryCode
+      - street
+      - city
+      - zipCode
+      - countryCode
       properties:
         street:
           type: string
@@ -5564,7 +5817,7 @@ components:
     CheckoutFormInvoiceAddressCompany:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
@@ -5575,8 +5828,8 @@ components:
     CheckoutFormInvoiceAddressNaturalPerson:
       type: object
       required:
-        - firstName
-        - lastName
+      - firstName
+      - lastName
       properties:
         firstName:
           type: string
@@ -5589,11 +5842,11 @@ components:
     CheckoutFormLineItem:
       type: object
       required:
-        - id
-        - offer
-        - quantity
-        - originalPrice
-        - price
+      - id
+      - offer
+      - quantity
+      - originalPrice
+      - price
       properties:
         id:
           type: string
@@ -5638,10 +5891,28 @@ components:
           format: int32
           description: Quantity of an additional service
           example: 1
+    CheckoutFormDiscount:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - COUPON
+          - BUNDLE
+          - MULTIPACK
+          - CROSSMULTIPACK
+          description: >
+            Describes type of discount used in checkout form. The types of discounts can be as follows:
+            * `COUPON` - coupon was used during payment
+            * `BUNDLE` - some of the line items were bought as a bundle
+            * `MULTIPACK` - at least one line item was bought with multipack option
+            * `CROSSMULTIPACK` - some of line items each from different offers were bought together as multipack
     CheckoutFormSummary:
       type: object
       required:
-        - totalToPay
+      - totalToPay
       properties:
         totalToPay:
           description: Total to pay including additional services and delivery
@@ -5665,9 +5936,9 @@ components:
         status:
           type: string
           enum:
-            - CLOSED
-            - ONGOING
-            - UNRESOLVED
+          - CLOSED
+          - ONGOING
+          - UNRESOLVED
         buyer:
           $ref: '#/components/schemas/DisputeUser'
         seller:
@@ -5680,14 +5951,14 @@ components:
           type: integer
           format: int32
       required:
-        - id
-        - subject
-        - status
-        - buyer
-        - seller
-        - checkoutForm
-        - message
-        - messagesCount
+      - id
+      - subject
+      - status
+      - buyer
+      - seller
+      - checkoutForm
+      - message
+      - messagesCount
     Subject:
       type: object
       properties:
@@ -5728,9 +5999,9 @@ components:
           format: date-time
           example: "2018-02-10T12:12:12Z"
       required:
-        - id
-        - author
-        - createdAt
+      - id
+      - author
+      - createdAt
     DisputeMessage:
       type: object
       description: Initial dispute message with text OR attachment OR both
@@ -5750,9 +6021,9 @@ components:
           format: date-time
           example: "2018-02-10T12:12:12Z"
       required:
-        - id
-        - author
-        - createdAt
+      - id
+      - author
+      - createdAt
     DisputeMessageAuthor:
       type: object
       description: Author of the message
@@ -5763,7 +6034,7 @@ components:
         role:
           $ref: '#/components/schemas/MessageAuthorRole'
       required:
-        - role
+      - role
     DisputeAttachment:
       type: object
       properties:
@@ -5774,15 +6045,15 @@ components:
           description: Direct link to the attachment
           example: "https://upload.allegro.pl/sale/dispute-attachments/eeed0007-4404-4176-a1eb-11d26f056c0d"
       required:
-        - fileName
-        - url
+      - fileName
+      - url
     DisputeAttachmentId:
       type: object
       properties:
         id:
           type: string
       required:
-        - id
+      - id
     AttachmentDeclaration:
       type: object
       properties:
@@ -5791,8 +6062,8 @@ components:
         size:
           type: integer
       required:
-        - fileName
-        - size
+      - fileName
+      - size
     DisputeCheckoutForm:
       type: object
       properties:
@@ -5803,8 +6074,8 @@ components:
           format: date-time
           example: "2018-02-10T12:12:12Z"
       required:
-        - id
-        - createdAt
+      - id
+      - createdAt
     DisputeAuthor:
       type: object
       properties:
@@ -5814,19 +6085,19 @@ components:
         role:
           $ref: '#/components/schemas/DisputeAuthorRole'
       required:
-        - role
+      - role
     DisputeAuthorRole:
       type: string
       enum:
-        - BUYER
-        - ADMIN
+      - BUYER
+      - ADMIN
     MessageAuthorRole:
       type: string
       enum:
-        - BUYER
-        - SELLER
-        - ADMIN
-        - SYSTEM
+      - BUYER
+      - SELLER
+      - ADMIN
+      - SYSTEM
     MessageRequest:
       type: object
       description: "Request body to add message to the dispute. Presence of text or attachment fields or both is required."
@@ -5839,16 +6110,16 @@ components:
         type:
           type: string
           enum:
-            - REGULAR
-            - END_REQUEST
+          - REGULAR
+          - END_REQUEST
       required:
-        - text
-        - attachment
-        - type
+      - text
+      - attachment
+      - type
     TagRequest:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
@@ -5857,16 +6128,16 @@ components:
     TagId:
       type: object
       required:
-        - id
+      - id
       properties:
         id:
           type: string
     TagResponse:
       type: object
       required:
-        - id
-        - name
-        - hidden
+      - id
+      - name
+      - hidden
       properties:
         id:
           type: string
@@ -5877,7 +6148,7 @@ components:
     TagListResponse:
       type: object
       required:
-        - tags
+      - tags
       properties:
         tags:
           type: array
@@ -5886,7 +6157,7 @@ components:
     TagIdsRequest:
       type: object
       required:
-        - tags
+      - tags
       properties:
         tags:
           type: array
@@ -5912,3 +6183,95 @@ components:
             required:
             - dealId
             - lineItemId
+    PromotionResponseDto:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+    CampaignResponseDto:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+    SinglePromotionCampaignResponseDto:
+      type: object
+      required:
+      - campaign
+      - promotion
+      - status
+      properties:
+        campaign:
+          $ref: '#/components/schemas/CampaignResponseDto'
+        promotion:
+          $ref: '#/components/schemas/PromotionResponseDto'
+        status:
+          type: string
+          enum:
+          - PENDING
+          - ACTIVE
+          - SUSPENDED
+    PromotionCampaignsResponseDto:
+      type: object
+      required:
+      - promotionCampaigns
+      - totalCount
+      properties:
+        promotionCampaigns:
+          type: array
+          items:
+            $ref: '#/components/schemas/SinglePromotionCampaignResponseDto'
+        totalCount:
+          type: integer
+          format: int64
+    PromotionCampaignResponseDto:
+      type: object
+      required:
+      - campaign
+      - link
+      - promotion
+      - status
+      properties:
+        campaign:
+          $ref: '#/components/schemas/CampaignResponseDto'
+        link:
+          type: string
+        promotion:
+          $ref: '#/components/schemas/PromotionResponseDto'
+        status:
+          type: string
+          enum:
+          - REQUESTED
+          - SUSPENDED
+          - VERIFICATION
+          - ACCEPTED
+          - ACTIVE
+          - FINISHED
+          - DECLINED
+    CampaignRequestDto:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+    PromotionRequestDto:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+    PromotionCampaignRequestDto:
+      type: object
+      required:
+      - campaign
+      - promotion
+      properties:
+        promotion:
+          $ref: '#/components/schemas/PromotionRequestDto'
+        campaign:
+          $ref: '#/components/schemas/CampaignRequestDto'

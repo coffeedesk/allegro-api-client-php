@@ -55,8 +55,9 @@ class DictionaryCategoryParameter extends CategoryParameter
       * @var string[]
       */
     protected static $openAPITypes = [
-        'restrictions' => 'object',
-        'dictionary' => 'object[]'
+        'type' => 'string',
+        'restrictions' => '\AllegroApi\Model\DictionaryCategoryParameterRestrictions',
+        'dictionary' => '\AllegroApi\Model\DictionaryCategoryParameterDictionary[]'
     ];
 
     /**
@@ -65,6 +66,7 @@ class DictionaryCategoryParameter extends CategoryParameter
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'type' => null,
         'restrictions' => null,
         'dictionary' => null
     ];
@@ -96,6 +98,7 @@ class DictionaryCategoryParameter extends CategoryParameter
      * @var string[]
      */
     protected static $attributeMap = [
+        'type' => 'type',
         'restrictions' => 'restrictions',
         'dictionary' => 'dictionary'
     ];
@@ -106,6 +109,7 @@ class DictionaryCategoryParameter extends CategoryParameter
      * @var string[]
      */
     protected static $setters = [
+        'type' => 'setType',
         'restrictions' => 'setRestrictions',
         'dictionary' => 'setDictionary'
     ];
@@ -116,6 +120,7 @@ class DictionaryCategoryParameter extends CategoryParameter
      * @var string[]
      */
     protected static $getters = [
+        'type' => 'getType',
         'restrictions' => 'getRestrictions',
         'dictionary' => 'getDictionary'
     ];
@@ -176,6 +181,7 @@ class DictionaryCategoryParameter extends CategoryParameter
     {
         parent::__construct($data);
 
+        $this->container['type'] = isset($data['type']) ? $data['type'] : 'DICTIONARY';
         $this->container['restrictions'] = isset($data['restrictions']) ? $data['restrictions'] : null;
         $this->container['dictionary'] = isset($data['dictionary']) ? $data['dictionary'] : null;
     }
@@ -205,9 +211,33 @@ class DictionaryCategoryParameter extends CategoryParameter
 
 
     /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->container['type'] = $type;
+
+        return $this;
+    }
+
+    /**
      * Gets restrictions
      *
-     * @return object|null
+     * @return \AllegroApi\Model\DictionaryCategoryParameterRestrictions|null
      */
     public function getRestrictions()
     {
@@ -217,7 +247,7 @@ class DictionaryCategoryParameter extends CategoryParameter
     /**
      * Sets restrictions
      *
-     * @param object|null $restrictions restrictions
+     * @param \AllegroApi\Model\DictionaryCategoryParameterRestrictions|null $restrictions restrictions
      *
      * @return $this
      */
@@ -231,7 +261,7 @@ class DictionaryCategoryParameter extends CategoryParameter
     /**
      * Gets dictionary
      *
-     * @return object[]|null
+     * @return \AllegroApi\Model\DictionaryCategoryParameterDictionary[]|null
      */
     public function getDictionary()
     {
@@ -241,7 +271,7 @@ class DictionaryCategoryParameter extends CategoryParameter
     /**
      * Sets dictionary
      *
-     * @param object[]|null $dictionary dictionary
+     * @param \AllegroApi\Model\DictionaryCategoryParameterDictionary[]|null $dictionary dictionary
      *
      * @return $this
      */

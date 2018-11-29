@@ -66,6 +66,7 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         'invoice' => '\AllegroApi\Model\CheckoutFormInvoiceInfo',
         'line_items' => '\AllegroApi\Model\CheckoutFormLineItem[]',
         'surcharges' => '\AllegroApi\Model\CheckoutFormPaymentReference[]',
+        'discounts' => '\AllegroApi\Model\CheckoutFormDiscount[]',
         'summary' => '\AllegroApi\Model\CheckoutFormSummary'
     ];
 
@@ -84,6 +85,7 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         'invoice' => null,
         'line_items' => null,
         'surcharges' => null,
+        'discounts' => null,
         'summary' => null
     ];
 
@@ -123,6 +125,7 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         'invoice' => 'invoice',
         'line_items' => 'lineItems',
         'surcharges' => 'surcharges',
+        'discounts' => 'discounts',
         'summary' => 'summary'
     ];
 
@@ -141,6 +144,7 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         'invoice' => 'setInvoice',
         'line_items' => 'setLineItems',
         'surcharges' => 'setSurcharges',
+        'discounts' => 'setDiscounts',
         'summary' => 'setSummary'
     ];
 
@@ -159,6 +163,7 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         'invoice' => 'getInvoice',
         'line_items' => 'getLineItems',
         'surcharges' => 'getSurcharges',
+        'discounts' => 'getDiscounts',
         'summary' => 'getSummary'
     ];
 
@@ -231,6 +236,7 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         $this->container['invoice'] = isset($data['invoice']) ? $data['invoice'] : null;
         $this->container['line_items'] = isset($data['line_items']) ? $data['line_items'] : null;
         $this->container['surcharges'] = isset($data['surcharges']) ? $data['surcharges'] : null;
+        $this->container['discounts'] = isset($data['discounts']) ? $data['discounts'] : null;
         $this->container['summary'] = isset($data['summary']) ? $data['summary'] : null;
     }
 
@@ -260,6 +266,9 @@ class CheckoutForm implements ModelInterface, ArrayAccess
         }
         if ($this->container['surcharges'] === null) {
             $invalidProperties[] = "'surcharges' can't be null";
+        }
+        if ($this->container['discounts'] === null) {
+            $invalidProperties[] = "'discounts' can't be null";
         }
         if ($this->container['summary'] === null) {
             $invalidProperties[] = "'summary' can't be null";
@@ -491,6 +500,30 @@ class CheckoutForm implements ModelInterface, ArrayAccess
     public function setSurcharges($surcharges)
     {
         $this->container['surcharges'] = $surcharges;
+
+        return $this;
+    }
+
+    /**
+     * Gets discounts
+     *
+     * @return \AllegroApi\Model\CheckoutFormDiscount[]
+     */
+    public function getDiscounts()
+    {
+        return $this->container['discounts'];
+    }
+
+    /**
+     * Sets discounts
+     *
+     * @param \AllegroApi\Model\CheckoutFormDiscount[] $discounts discounts
+     *
+     * @return $this
+     */
+    public function setDiscounts($discounts)
+    {
+        $this->container['discounts'] = $discounts;
 
         return $this;
     }

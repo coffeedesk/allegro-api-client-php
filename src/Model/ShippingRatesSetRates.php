@@ -213,22 +213,10 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
-        if ($this->container['delivery_method'] === null) {
-            $invalidProperties[] = "'delivery_method' can't be null";
-        }
-        if ($this->container['max_quantity_per_package'] === null) {
-            $invalidProperties[] = "'max_quantity_per_package' can't be null";
-        }
-        if (($this->container['max_quantity_per_package'] < 1)) {
+        if (!is_null($this->container['max_quantity_per_package']) && ($this->container['max_quantity_per_package'] < 1)) {
             $invalidProperties[] = "invalid value for 'max_quantity_per_package', must be bigger than or equal to 1.";
         }
 
-        if ($this->container['first_item_rate'] === null) {
-            $invalidProperties[] = "'first_item_rate' can't be null";
-        }
-        if ($this->container['next_item_rate'] === null) {
-            $invalidProperties[] = "'next_item_rate' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -247,7 +235,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Gets delivery_method
      *
-     * @return \AllegroApi\Model\ShippingRatesSetRatesDeliveryMethod
+     * @return \AllegroApi\Model\ShippingRatesSetRatesDeliveryMethod|null
      */
     public function getDeliveryMethod()
     {
@@ -257,7 +245,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Sets delivery_method
      *
-     * @param \AllegroApi\Model\ShippingRatesSetRatesDeliveryMethod $delivery_method delivery_method
+     * @param \AllegroApi\Model\ShippingRatesSetRatesDeliveryMethod|null $delivery_method delivery_method
      *
      * @return $this
      */
@@ -271,7 +259,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Gets max_quantity_per_package
      *
-     * @return int
+     * @return int|null
      */
     public function getMaxQuantityPerPackage()
     {
@@ -281,14 +269,14 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Sets max_quantity_per_package
      *
-     * @param int $max_quantity_per_package Maximum quantity per package for the given delivery method. Minimum value is 1.
+     * @param int|null $max_quantity_per_package Maximum quantity per package for the given delivery method. Minimum value is 1.
      *
      * @return $this
      */
     public function setMaxQuantityPerPackage($max_quantity_per_package)
     {
 
-        if (($max_quantity_per_package < 1)) {
+        if (!is_null($max_quantity_per_package) && ($max_quantity_per_package < 1)) {
             throw new \InvalidArgumentException('invalid value for $max_quantity_per_package when calling ShippingRatesSetRates., must be bigger than or equal to 1.');
         }
 
@@ -300,7 +288,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Gets first_item_rate
      *
-     * @return \AllegroApi\Model\ShippingRatesSetRatesFirstItemRate
+     * @return \AllegroApi\Model\ShippingRatesSetRatesFirstItemRate|null
      */
     public function getFirstItemRate()
     {
@@ -310,7 +298,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Sets first_item_rate
      *
-     * @param \AllegroApi\Model\ShippingRatesSetRatesFirstItemRate $first_item_rate first_item_rate
+     * @param \AllegroApi\Model\ShippingRatesSetRatesFirstItemRate|null $first_item_rate first_item_rate
      *
      * @return $this
      */
@@ -324,7 +312,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Gets next_item_rate
      *
-     * @return \AllegroApi\Model\ShippingRatesSetRatesNextItemRate
+     * @return \AllegroApi\Model\ShippingRatesSetRatesNextItemRate|null
      */
     public function getNextItemRate()
     {
@@ -334,7 +322,7 @@ class ShippingRatesSetRates implements ModelInterface, ArrayAccess
     /**
      * Sets next_item_rate
      *
-     * @param \AllegroApi\Model\ShippingRatesSetRatesNextItemRate $next_item_rate next_item_rate
+     * @param \AllegroApi\Model\ShippingRatesSetRatesNextItemRate|null $next_item_rate next_item_rate
      *
      * @return $this
      */

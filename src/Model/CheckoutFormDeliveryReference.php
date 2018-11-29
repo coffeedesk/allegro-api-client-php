@@ -60,7 +60,8 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
         'address' => '\AllegroApi\Model\CheckoutFormDeliveryAddress',
         'method' => '\AllegroApi\Model\CheckoutFormDeliveryMethod',
         'pickup_point' => '\AllegroApi\Model\CheckoutFormDeliveryPickupPoint',
-        'cost' => '\AllegroApi\Model\Price'
+        'cost' => '\AllegroApi\Model\Price',
+        'smart' => 'bool'
     ];
 
     /**
@@ -72,7 +73,8 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
         'address' => null,
         'method' => null,
         'pickup_point' => null,
-        'cost' => null
+        'cost' => null,
+        'smart' => null
     ];
 
     /**
@@ -105,7 +107,8 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
         'address' => 'address',
         'method' => 'method',
         'pickup_point' => 'pickupPoint',
-        'cost' => 'cost'
+        'cost' => 'cost',
+        'smart' => 'smart'
     ];
 
     /**
@@ -117,7 +120,8 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
         'address' => 'setAddress',
         'method' => 'setMethod',
         'pickup_point' => 'setPickupPoint',
-        'cost' => 'setCost'
+        'cost' => 'setCost',
+        'smart' => 'setSmart'
     ];
 
     /**
@@ -129,7 +133,8 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
         'address' => 'getAddress',
         'method' => 'getMethod',
         'pickup_point' => 'getPickupPoint',
-        'cost' => 'getCost'
+        'cost' => 'getCost',
+        'smart' => 'getSmart'
     ];
 
     /**
@@ -196,6 +201,7 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
         $this->container['method'] = isset($data['method']) ? $data['method'] : null;
         $this->container['pickup_point'] = isset($data['pickup_point']) ? $data['pickup_point'] : null;
         $this->container['cost'] = isset($data['cost']) ? $data['cost'] : null;
+        $this->container['smart'] = isset($data['smart']) ? $data['smart'] : null;
     }
 
     /**
@@ -314,6 +320,30 @@ class CheckoutFormDeliveryReference implements ModelInterface, ArrayAccess
     public function setCost($cost)
     {
         $this->container['cost'] = $cost;
+
+        return $this;
+    }
+
+    /**
+     * Gets smart
+     *
+     * @return bool|null
+     */
+    public function getSmart()
+    {
+        return $this->container['smart'];
+    }
+
+    /**
+     * Sets smart
+     *
+     * @param bool|null $smart Buyer used a SMART option
+     *
+     * @return $this
+     */
+    public function setSmart($smart)
+    {
+        $this->container['smart'] = $smart;
 
         return $this;
     }

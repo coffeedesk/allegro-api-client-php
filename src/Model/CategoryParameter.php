@@ -42,7 +42,7 @@ use \AllegroApi\ObjectSerializer;
  */
 class CategoryParameter implements ModelInterface, ArrayAccess
 {
-    const DISCRIMINATOR = 'type';
+    const DISCRIMINATOR = null;
 
     /**
       * The original name of the model.
@@ -57,7 +57,12 @@ class CategoryParameter implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        
+        'id' => 'string',
+        'name' => 'string',
+        'type' => 'string',
+        'required' => 'bool',
+        'unit' => 'string',
+        'options' => '\AllegroApi\Model\CategoryParameterOptions'
     ];
 
     /**
@@ -66,7 +71,12 @@ class CategoryParameter implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        
+        'id' => null,
+        'name' => null,
+        'type' => null,
+        'required' => null,
+        'unit' => null,
+        'options' => null
     ];
 
     /**
@@ -96,7 +106,12 @@ class CategoryParameter implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        
+        'id' => 'id',
+        'name' => 'name',
+        'type' => 'type',
+        'required' => 'required',
+        'unit' => 'unit',
+        'options' => 'options'
     ];
 
     /**
@@ -105,7 +120,12 @@ class CategoryParameter implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        
+        'id' => 'setId',
+        'name' => 'setName',
+        'type' => 'setType',
+        'required' => 'setRequired',
+        'unit' => 'setUnit',
+        'options' => 'setOptions'
     ];
 
     /**
@@ -114,7 +134,12 @@ class CategoryParameter implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        
+        'id' => 'getId',
+        'name' => 'getName',
+        'type' => 'getType',
+        'required' => 'getRequired',
+        'unit' => 'getUnit',
+        'options' => 'getOptions'
     ];
 
     /**
@@ -177,10 +202,12 @@ class CategoryParameter implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-
-        // Initialize discriminator property with the model name.
-        $discriminator = array_search('type', self::$attributeMap, true);
-        $this->container[$discriminator] = static::$openAPIModelName;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
+        $this->container['name'] = isset($data['name']) ? $data['name'] : null;
+        $this->container['type'] = isset($data['type']) ? $data['type'] : null;
+        $this->container['required'] = isset($data['required']) ? $data['required'] : null;
+        $this->container['unit'] = isset($data['unit']) ? $data['unit'] : null;
+        $this->container['options'] = isset($data['options']) ? $data['options'] : null;
     }
 
     /**
@@ -206,6 +233,150 @@ class CategoryParameter implements ModelInterface, ArrayAccess
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets id
+     *
+     * @return string|null
+     */
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param string|null $id id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
+
+        return $this;
+    }
+
+    /**
+     * Gets name
+     *
+     * @return string|null
+     */
+    public function getName()
+    {
+        return $this->container['name'];
+    }
+
+    /**
+     * Sets name
+     *
+     * @param string|null $name name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->container['name'] = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->container['type'] = $type;
+
+        return $this;
+    }
+
+    /**
+     * Gets required
+     *
+     * @return bool|null
+     */
+    public function getRequired()
+    {
+        return $this->container['required'];
+    }
+
+    /**
+     * Sets required
+     *
+     * @param bool|null $required required
+     *
+     * @return $this
+     */
+    public function setRequired($required)
+    {
+        $this->container['required'] = $required;
+
+        return $this;
+    }
+
+    /**
+     * Gets unit
+     *
+     * @return string|null
+     */
+    public function getUnit()
+    {
+        return $this->container['unit'];
+    }
+
+    /**
+     * Sets unit
+     *
+     * @param string|null $unit unit
+     *
+     * @return $this
+     */
+    public function setUnit($unit)
+    {
+        $this->container['unit'] = $unit;
+
+        return $this;
+    }
+
+    /**
+     * Gets options
+     *
+     * @return \AllegroApi\Model\CategoryParameterOptions|null
+     */
+    public function getOptions()
+    {
+        return $this->container['options'];
+    }
+
+    /**
+     * Sets options
+     *
+     * @param \AllegroApi\Model\CategoryParameterOptions|null $options options
+     *
+     * @return $this
+     */
+    public function setOptions($options)
+    {
+        $this->container['options'] = $options;
+
+        return $this;
+    }
     /**
      * Returns true if offset exists. False otherwise.
      *

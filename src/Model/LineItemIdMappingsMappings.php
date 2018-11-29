@@ -195,12 +195,6 @@ class LineItemIdMappingsMappings implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
-        if ($this->container['deal_id'] === null) {
-            $invalidProperties[] = "'deal_id' can't be null";
-        }
-        if ($this->container['line_item_id'] === null) {
-            $invalidProperties[] = "'line_item_id' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -219,7 +213,7 @@ class LineItemIdMappingsMappings implements ModelInterface, ArrayAccess
     /**
      * Gets deal_id
      *
-     * @return string
+     * @return string|null
      */
     public function getDealId()
     {
@@ -229,7 +223,7 @@ class LineItemIdMappingsMappings implements ModelInterface, ArrayAccess
     /**
      * Sets deal_id
      *
-     * @param string $deal_id WebAPI deal id
+     * @param string|null $deal_id WebAPI deal id
      *
      * @return $this
      */
@@ -243,7 +237,7 @@ class LineItemIdMappingsMappings implements ModelInterface, ArrayAccess
     /**
      * Gets line_item_id
      *
-     * @return string
+     * @return string|null
      */
     public function getLineItemId()
     {
@@ -253,7 +247,7 @@ class LineItemIdMappingsMappings implements ModelInterface, ArrayAccess
     /**
      * Sets line_item_id
      *
-     * @param string $line_item_id Order API line item id
+     * @param string|null $line_item_id Order API line item id
      *
      * @return $this
      */

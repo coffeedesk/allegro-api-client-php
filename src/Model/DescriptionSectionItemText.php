@@ -28,8 +28,6 @@
  */
 
 namespace AllegroApi\Model;
-
-use \ArrayAccess;
 use \AllegroApi\ObjectSerializer;
 
 /**
@@ -40,7 +38,7 @@ use \AllegroApi\ObjectSerializer;
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class DescriptionSectionItemText implements ModelInterface, ArrayAccess
+class DescriptionSectionItemText extends DescriptionSectionItem 
 {
     const DISCRIMINATOR = null;
 
@@ -78,7 +76,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public static function openAPITypes()
     {
-        return self::$openAPITypes;
+        return self::$openAPITypes + parent::openAPITypes();
     }
 
     /**
@@ -88,7 +86,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public static function openAPIFormats()
     {
-        return self::$openAPIFormats;
+        return self::$openAPIFormats + parent::openAPIFormats();
     }
 
     /**
@@ -130,7 +128,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public static function attributeMap()
     {
-        return self::$attributeMap;
+        return parent::attributeMap() + self::$attributeMap;
     }
 
     /**
@@ -140,7 +138,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public static function setters()
     {
-        return self::$setters;
+        return parent::setters() + self::$setters;
     }
 
     /**
@@ -150,7 +148,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public static function getters()
     {
-        return self::$getters;
+        return parent::getters() + self::$getters;
     }
 
     /**
@@ -167,12 +165,6 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
 
     
 
-    /**
-     * Associative array for storing property values
-     *
-     * @var mixed[]
-     */
-    protected $container = [];
 
     /**
      * Constructor
@@ -182,7 +174,9 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['type'] = isset($data['type']) ? $data['type'] : null;
+        parent::__construct($data);
+
+        $this->container['type'] = isset($data['type']) ? $data['type'] : 'TEXT';
         $this->container['content'] = isset($data['content']) ? $data['content'] : null;
     }
 
@@ -193,7 +187,7 @@ class DescriptionSectionItemText implements ModelInterface, ArrayAccess
      */
     public function listInvalidProperties()
     {
-        $invalidProperties = [];
+        $invalidProperties = parent::listInvalidProperties();
 
         return $invalidProperties;
     }

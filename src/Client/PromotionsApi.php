@@ -88,21 +88,370 @@ class PromotionsApi
     }
 
     /**
+     * Operation addPromotionToCampaignUsingPOST
+     *
+     * Creates promotion campaign application
+     *
+     * @param  \AllegroApi\Model\PromotionCampaignRequestDto $promotion_campaign_request_dto request (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \AllegroApi\Model\PromotionCampaignResponseDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors
+     */
+    public function addPromotionToCampaignUsingPOST($promotion_campaign_request_dto)
+    {
+        list($response) = $this->addPromotionToCampaignUsingPOSTWithHttpInfo($promotion_campaign_request_dto);
+        return $response;
+    }
+
+    /**
+     * Operation addPromotionToCampaignUsingPOSTWithHttpInfo
+     *
+     * Creates promotion campaign application
+     *
+     * @param  \AllegroApi\Model\PromotionCampaignRequestDto $promotion_campaign_request_dto request (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \AllegroApi\Model\PromotionCampaignResponseDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function addPromotionToCampaignUsingPOSTWithHttpInfo($promotion_campaign_request_dto)
+    {
+        $request = $this->addPromotionToCampaignUsingPOSTRequest($promotion_campaign_request_dto);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 202:
+                    if ('\AllegroApi\Model\PromotionCampaignResponseDto' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\PromotionCampaignResponseDto', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 400:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 401:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 403:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 422:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\AllegroApi\Model\PromotionCampaignResponseDto';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 202:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\PromotionCampaignResponseDto',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation addPromotionToCampaignUsingPOSTAsync
+     *
+     * Creates promotion campaign application
+     *
+     * @param  \AllegroApi\Model\PromotionCampaignRequestDto $promotion_campaign_request_dto request (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function addPromotionToCampaignUsingPOSTAsync($promotion_campaign_request_dto)
+    {
+        return $this->addPromotionToCampaignUsingPOSTAsyncWithHttpInfo($promotion_campaign_request_dto)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation addPromotionToCampaignUsingPOSTAsyncWithHttpInfo
+     *
+     * Creates promotion campaign application
+     *
+     * @param  \AllegroApi\Model\PromotionCampaignRequestDto $promotion_campaign_request_dto request (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function addPromotionToCampaignUsingPOSTAsyncWithHttpInfo($promotion_campaign_request_dto)
+    {
+        $returnType = '\AllegroApi\Model\PromotionCampaignResponseDto';
+        $request = $this->addPromotionToCampaignUsingPOSTRequest($promotion_campaign_request_dto);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'addPromotionToCampaignUsingPOST'
+     *
+     * @param  \AllegroApi\Model\PromotionCampaignRequestDto $promotion_campaign_request_dto request (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function addPromotionToCampaignUsingPOSTRequest($promotion_campaign_request_dto)
+    {
+        // verify the required parameter 'promotion_campaign_request_dto' is set
+        if ($promotion_campaign_request_dto === null || (is_array($promotion_campaign_request_dto) && count($promotion_campaign_request_dto) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $promotion_campaign_request_dto when calling addPromotionToCampaignUsingPOST'
+            );
+        }
+
+        $resourcePath = '/sale/loyalty/promotion-campaigns';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // body params
+        $_tempBody = null;
+        if (isset($promotion_campaign_request_dto)) {
+            $_tempBody = $promotion_campaign_request_dto;
+        }
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/vnd.allegro.public.v1+json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/vnd.allegro.public.v1+json'],
+                ['application/vnd.allegro.public.v1+json']
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation createPromotionUsingPOST1
      *
      * Creates a new promotion
      *
      * @param  \AllegroApi\Model\SellerCreateRebateRequestDto $seller_create_rebate_request_dto request (required)
-     * @param  string $details details (optional)
-     * @param  bool $authenticated authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \AllegroApi\Model\SellerRebateDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors
      */
-    public function createPromotionUsingPOST1($seller_create_rebate_request_dto, $details = null, $authenticated = null)
+    public function createPromotionUsingPOST1($seller_create_rebate_request_dto)
     {
-        list($response) = $this->createPromotionUsingPOST1WithHttpInfo($seller_create_rebate_request_dto, $details, $authenticated);
+        list($response) = $this->createPromotionUsingPOST1WithHttpInfo($seller_create_rebate_request_dto);
         return $response;
     }
 
@@ -112,16 +461,14 @@ class PromotionsApi
      * Creates a new promotion
      *
      * @param  \AllegroApi\Model\SellerCreateRebateRequestDto $seller_create_rebate_request_dto request (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \AllegroApi\Model\SellerRebateDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors, HTTP status code, HTTP response headers (array of strings)
      */
-    public function createPromotionUsingPOST1WithHttpInfo($seller_create_rebate_request_dto, $details = null, $authenticated = null)
+    public function createPromotionUsingPOST1WithHttpInfo($seller_create_rebate_request_dto)
     {
-        $request = $this->createPromotionUsingPOST1Request($seller_create_rebate_request_dto, $details, $authenticated);
+        $request = $this->createPromotionUsingPOST1Request($seller_create_rebate_request_dto);
 
         try {
             $options = $this->createHttpClientOption();
@@ -242,15 +589,13 @@ class PromotionsApi
      * Creates a new promotion
      *
      * @param  \AllegroApi\Model\SellerCreateRebateRequestDto $seller_create_rebate_request_dto request (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createPromotionUsingPOST1Async($seller_create_rebate_request_dto, $details = null, $authenticated = null)
+    public function createPromotionUsingPOST1Async($seller_create_rebate_request_dto)
     {
-        return $this->createPromotionUsingPOST1AsyncWithHttpInfo($seller_create_rebate_request_dto, $details, $authenticated)
+        return $this->createPromotionUsingPOST1AsyncWithHttpInfo($seller_create_rebate_request_dto)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -264,16 +609,14 @@ class PromotionsApi
      * Creates a new promotion
      *
      * @param  \AllegroApi\Model\SellerCreateRebateRequestDto $seller_create_rebate_request_dto request (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createPromotionUsingPOST1AsyncWithHttpInfo($seller_create_rebate_request_dto, $details = null, $authenticated = null)
+    public function createPromotionUsingPOST1AsyncWithHttpInfo($seller_create_rebate_request_dto)
     {
         $returnType = '\AllegroApi\Model\SellerRebateDto';
-        $request = $this->createPromotionUsingPOST1Request($seller_create_rebate_request_dto, $details, $authenticated);
+        $request = $this->createPromotionUsingPOST1Request($seller_create_rebate_request_dto);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -313,13 +656,11 @@ class PromotionsApi
      * Create request for operation 'createPromotionUsingPOST1'
      *
      * @param  \AllegroApi\Model\SellerCreateRebateRequestDto $seller_create_rebate_request_dto request (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function createPromotionUsingPOST1Request($seller_create_rebate_request_dto, $details = null, $authenticated = null)
+    protected function createPromotionUsingPOST1Request($seller_create_rebate_request_dto)
     {
         // verify the required parameter 'seller_create_rebate_request_dto' is set
         if ($seller_create_rebate_request_dto === null || (is_array($seller_create_rebate_request_dto) && count($seller_create_rebate_request_dto) === 0)) {
@@ -335,14 +676,6 @@ class PromotionsApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($details !== null) {
-            $queryParams['details'] = ObjectSerializer::toQueryValue($details);
-        }
-        // query params
-        if ($authenticated !== null) {
-            $queryParams['authenticated'] = ObjectSerializer::toQueryValue($authenticated);
-        }
 
 
         // body params
@@ -391,15 +724,9 @@ class PromotionsApi
             }
         }
 
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Api-Key');
-        if ($apiKey !== null) {
-            $headers['Api-Key'] = $apiKey;
-        }
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
-        if ($apiKey !== null) {
-            $headers['Authorization'] = $apiKey;
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
         }
 
         $defaultHeaders = [];
@@ -428,16 +755,14 @@ class PromotionsApi
      * Deactivate promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details details (optional)
-     * @param  bool $authenticated authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function deactivatePromotionUsingDELETE($promotion_id, $details = null, $authenticated = null)
+    public function deactivatePromotionUsingDELETE($promotion_id)
     {
-        $this->deactivatePromotionUsingDELETEWithHttpInfo($promotion_id, $details, $authenticated);
+        $this->deactivatePromotionUsingDELETEWithHttpInfo($promotion_id);
     }
 
     /**
@@ -446,16 +771,14 @@ class PromotionsApi
      * Deactivate promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function deactivatePromotionUsingDELETEWithHttpInfo($promotion_id, $details = null, $authenticated = null)
+    public function deactivatePromotionUsingDELETEWithHttpInfo($promotion_id)
     {
-        $request = $this->deactivatePromotionUsingDELETERequest($promotion_id, $details, $authenticated);
+        $request = $this->deactivatePromotionUsingDELETERequest($promotion_id);
 
         try {
             $options = $this->createHttpClientOption();
@@ -516,15 +839,13 @@ class PromotionsApi
      * Deactivate promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function deactivatePromotionUsingDELETEAsync($promotion_id, $details = null, $authenticated = null)
+    public function deactivatePromotionUsingDELETEAsync($promotion_id)
     {
-        return $this->deactivatePromotionUsingDELETEAsyncWithHttpInfo($promotion_id, $details, $authenticated)
+        return $this->deactivatePromotionUsingDELETEAsyncWithHttpInfo($promotion_id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -538,16 +859,14 @@ class PromotionsApi
      * Deactivate promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function deactivatePromotionUsingDELETEAsyncWithHttpInfo($promotion_id, $details = null, $authenticated = null)
+    public function deactivatePromotionUsingDELETEAsyncWithHttpInfo($promotion_id)
     {
         $returnType = '';
-        $request = $this->deactivatePromotionUsingDELETERequest($promotion_id, $details, $authenticated);
+        $request = $this->deactivatePromotionUsingDELETERequest($promotion_id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -576,13 +895,11 @@ class PromotionsApi
      * Create request for operation 'deactivatePromotionUsingDELETE'
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function deactivatePromotionUsingDELETERequest($promotion_id, $details = null, $authenticated = null)
+    protected function deactivatePromotionUsingDELETERequest($promotion_id)
     {
         // verify the required parameter 'promotion_id' is set
         if ($promotion_id === null || (is_array($promotion_id) && count($promotion_id) === 0)) {
@@ -598,14 +915,6 @@ class PromotionsApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($details !== null) {
-            $queryParams['details'] = ObjectSerializer::toQueryValue($details);
-        }
-        // query params
-        if ($authenticated !== null) {
-            $queryParams['authenticated'] = ObjectSerializer::toQueryValue($authenticated);
-        }
 
         // path params
         if ($promotion_id !== null) {
@@ -659,15 +968,9 @@ class PromotionsApi
             }
         }
 
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Api-Key');
-        if ($apiKey !== null) {
-            $headers['Api-Key'] = $apiKey;
-        }
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
-        if ($apiKey !== null) {
-            $headers['Authorization'] = $apiKey;
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
         }
 
         $defaultHeaders = [];
@@ -691,21 +994,1230 @@ class PromotionsApi
     }
 
     /**
+     * Operation deleteCampaignFromPromotionUsingDELETE
+     *
+     * Deletes campaign from promotion
+     *
+     * @param  string $promotion_id The promotion unique id (required)
+     * @param  string $campaign_id The campaign unique id (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    public function deleteCampaignFromPromotionUsingDELETE($promotion_id, $campaign_id)
+    {
+        $this->deleteCampaignFromPromotionUsingDELETEWithHttpInfo($promotion_id, $campaign_id);
+    }
+
+    /**
+     * Operation deleteCampaignFromPromotionUsingDELETEWithHttpInfo
+     *
+     * Deletes campaign from promotion
+     *
+     * @param  string $promotion_id The promotion unique id (required)
+     * @param  string $campaign_id The campaign unique id (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function deleteCampaignFromPromotionUsingDELETEWithHttpInfo($promotion_id, $campaign_id)
+    {
+        $request = $this->deleteCampaignFromPromotionUsingDELETERequest($promotion_id, $campaign_id);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            return [null, $statusCode, $response->getHeaders()];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation deleteCampaignFromPromotionUsingDELETEAsync
+     *
+     * Deletes campaign from promotion
+     *
+     * @param  string $promotion_id The promotion unique id (required)
+     * @param  string $campaign_id The campaign unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteCampaignFromPromotionUsingDELETEAsync($promotion_id, $campaign_id)
+    {
+        return $this->deleteCampaignFromPromotionUsingDELETEAsyncWithHttpInfo($promotion_id, $campaign_id)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation deleteCampaignFromPromotionUsingDELETEAsyncWithHttpInfo
+     *
+     * Deletes campaign from promotion
+     *
+     * @param  string $promotion_id The promotion unique id (required)
+     * @param  string $campaign_id The campaign unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deleteCampaignFromPromotionUsingDELETEAsyncWithHttpInfo($promotion_id, $campaign_id)
+    {
+        $returnType = '';
+        $request = $this->deleteCampaignFromPromotionUsingDELETERequest($promotion_id, $campaign_id);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteCampaignFromPromotionUsingDELETE'
+     *
+     * @param  string $promotion_id The promotion unique id (required)
+     * @param  string $campaign_id The campaign unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function deleteCampaignFromPromotionUsingDELETERequest($promotion_id, $campaign_id)
+    {
+        // verify the required parameter 'promotion_id' is set
+        if ($promotion_id === null || (is_array($promotion_id) && count($promotion_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $promotion_id when calling deleteCampaignFromPromotionUsingDELETE'
+            );
+        }
+        // verify the required parameter 'campaign_id' is set
+        if ($campaign_id === null || (is_array($campaign_id) && count($campaign_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $campaign_id when calling deleteCampaignFromPromotionUsingDELETE'
+            );
+        }
+
+        $resourcePath = '/sale/loyalty/promotion-campaigns';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+        // query params
+        if ($promotion_id !== null) {
+            $queryParams['promotion.id'] = ObjectSerializer::toQueryValue($promotion_id);
+        }
+        // query params
+        if ($campaign_id !== null) {
+            $queryParams['campaign.id'] = ObjectSerializer::toQueryValue($campaign_id);
+        }
+
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['*/*']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['*/*'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation deletePromotionCampaignApplicationUsingDELETE
+     *
+     * Deletes promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    public function deletePromotionCampaignApplicationUsingDELETE($application_id)
+    {
+        $this->deletePromotionCampaignApplicationUsingDELETEWithHttpInfo($application_id);
+    }
+
+    /**
+     * Operation deletePromotionCampaignApplicationUsingDELETEWithHttpInfo
+     *
+     * Deletes promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function deletePromotionCampaignApplicationUsingDELETEWithHttpInfo($application_id)
+    {
+        $request = $this->deletePromotionCampaignApplicationUsingDELETERequest($application_id);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            return [null, $statusCode, $response->getHeaders()];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 422:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation deletePromotionCampaignApplicationUsingDELETEAsync
+     *
+     * Deletes promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deletePromotionCampaignApplicationUsingDELETEAsync($application_id)
+    {
+        return $this->deletePromotionCampaignApplicationUsingDELETEAsyncWithHttpInfo($application_id)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation deletePromotionCampaignApplicationUsingDELETEAsyncWithHttpInfo
+     *
+     * Deletes promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function deletePromotionCampaignApplicationUsingDELETEAsyncWithHttpInfo($application_id)
+    {
+        $returnType = '';
+        $request = $this->deletePromotionCampaignApplicationUsingDELETERequest($application_id);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deletePromotionCampaignApplicationUsingDELETE'
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function deletePromotionCampaignApplicationUsingDELETERequest($application_id)
+    {
+        // verify the required parameter 'application_id' is set
+        if ($application_id === null || (is_array($application_id) && count($application_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $application_id when calling deletePromotionCampaignApplicationUsingDELETE'
+            );
+        }
+
+        $resourcePath = '/sale/loyalty/promotion-campaign-applications/{applicationId}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // path params
+        if ($application_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'applicationId' . '}',
+                ObjectSerializer::toPathValue($application_id),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['*/*']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['*/*'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getPromotionCampaignApplicationUsingGET
+     *
+     * Get promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return object|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors
+     */
+    public function getPromotionCampaignApplicationUsingGET($application_id)
+    {
+        list($response) = $this->getPromotionCampaignApplicationUsingGETWithHttpInfo($application_id);
+        return $response;
+    }
+
+    /**
+     * Operation getPromotionCampaignApplicationUsingGETWithHttpInfo
+     *
+     * Get promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of object|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getPromotionCampaignApplicationUsingGETWithHttpInfo($application_id)
+    {
+        $request = $this->getPromotionCampaignApplicationUsingGETRequest($application_id);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('object' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'object', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 401:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 403:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 404:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'object';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'object',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getPromotionCampaignApplicationUsingGETAsync
+     *
+     * Get promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getPromotionCampaignApplicationUsingGETAsync($application_id)
+    {
+        return $this->getPromotionCampaignApplicationUsingGETAsyncWithHttpInfo($application_id)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getPromotionCampaignApplicationUsingGETAsyncWithHttpInfo
+     *
+     * Get promotion campaign application by its id
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getPromotionCampaignApplicationUsingGETAsyncWithHttpInfo($application_id)
+    {
+        $returnType = 'object';
+        $request = $this->getPromotionCampaignApplicationUsingGETRequest($application_id);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getPromotionCampaignApplicationUsingGET'
+     *
+     * @param  string $application_id The application unique id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function getPromotionCampaignApplicationUsingGETRequest($application_id)
+    {
+        // verify the required parameter 'application_id' is set
+        if ($application_id === null || (is_array($application_id) && count($application_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $application_id when calling getPromotionCampaignApplicationUsingGET'
+            );
+        }
+
+        $resourcePath = '/sale/loyalty/promotion-campaign-applications/{applicationId}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+        // path params
+        if ($application_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'applicationId' . '}',
+                ObjectSerializer::toPathValue($application_id),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/vnd.allegro.public.v1+json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/vnd.allegro.public.v1+json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getPromotionCampaignsUsingGET
+     *
+     * Get promotion campaigns
+     *
+     * @param  string $promotion_id The promotion unique id (optional)
+     * @param  int $limit limit (optional, default to 50)
+     * @param  int $offset offset (optional, default to 0)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \AllegroApi\Model\PromotionCampaignsResponseDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors
+     */
+    public function getPromotionCampaignsUsingGET($promotion_id = null, $limit = 50, $offset = 0)
+    {
+        list($response) = $this->getPromotionCampaignsUsingGETWithHttpInfo($promotion_id, $limit, $offset);
+        return $response;
+    }
+
+    /**
+     * Operation getPromotionCampaignsUsingGETWithHttpInfo
+     *
+     * Get promotion campaigns
+     *
+     * @param  string $promotion_id The promotion unique id (optional)
+     * @param  int $limit limit (optional, default to 50)
+     * @param  int $offset offset (optional, default to 0)
+     *
+     * @throws \AllegroApi\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \AllegroApi\Model\PromotionCampaignsResponseDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getPromotionCampaignsUsingGETWithHttpInfo($promotion_id = null, $limit = 50, $offset = 0)
+    {
+        $request = $this->getPromotionCampaignsUsingGETRequest($promotion_id, $limit, $offset);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\AllegroApi\Model\PromotionCampaignsResponseDto' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\PromotionCampaignsResponseDto', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 401:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 403:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 404:
+                    if ('\AllegroApi\Model\Errors' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\AllegroApi\Model\Errors', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\AllegroApi\Model\PromotionCampaignsResponseDto';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\PromotionCampaignsResponseDto',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 401:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\AllegroApi\Model\Errors',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getPromotionCampaignsUsingGETAsync
+     *
+     * Get promotion campaigns
+     *
+     * @param  string $promotion_id The promotion unique id (optional)
+     * @param  int $limit limit (optional, default to 50)
+     * @param  int $offset offset (optional, default to 0)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getPromotionCampaignsUsingGETAsync($promotion_id = null, $limit = 50, $offset = 0)
+    {
+        return $this->getPromotionCampaignsUsingGETAsyncWithHttpInfo($promotion_id, $limit, $offset)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getPromotionCampaignsUsingGETAsyncWithHttpInfo
+     *
+     * Get promotion campaigns
+     *
+     * @param  string $promotion_id The promotion unique id (optional)
+     * @param  int $limit limit (optional, default to 50)
+     * @param  int $offset offset (optional, default to 0)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getPromotionCampaignsUsingGETAsyncWithHttpInfo($promotion_id = null, $limit = 50, $offset = 0)
+    {
+        $returnType = '\AllegroApi\Model\PromotionCampaignsResponseDto';
+        $request = $this->getPromotionCampaignsUsingGETRequest($promotion_id, $limit, $offset);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getPromotionCampaignsUsingGET'
+     *
+     * @param  string $promotion_id The promotion unique id (optional)
+     * @param  int $limit limit (optional, default to 50)
+     * @param  int $offset offset (optional, default to 0)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function getPromotionCampaignsUsingGETRequest($promotion_id = null, $limit = 50, $offset = 0)
+    {
+
+        $resourcePath = '/sale/loyalty/promotion-campaigns';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+        // query params
+        if ($promotion_id !== null) {
+            $queryParams['promotion.id'] = ObjectSerializer::toQueryValue($promotion_id);
+        }
+        // query params
+        if ($limit !== null) {
+            $queryParams['limit'] = ObjectSerializer::toQueryValue($limit);
+        }
+        // query params
+        if ($offset !== null) {
+            $queryParams['offset'] = ObjectSerializer::toQueryValue($offset);
+        }
+
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/vnd.allegro.public.v1+json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/vnd.allegro.public.v1+json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp\Psr7\build_query($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp\Psr7\build_query($queryParams);
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation getPromotionUsingGET
      *
      * Get a promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details details (optional)
-     * @param  bool $authenticated authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \AllegroApi\Model\SellerRebateDto|\AllegroApi\Model\Errors
      */
-    public function getPromotionUsingGET($promotion_id, $details = null, $authenticated = null)
+    public function getPromotionUsingGET($promotion_id)
     {
-        list($response) = $this->getPromotionUsingGETWithHttpInfo($promotion_id, $details, $authenticated);
+        list($response) = $this->getPromotionUsingGETWithHttpInfo($promotion_id);
         return $response;
     }
 
@@ -715,16 +2227,14 @@ class PromotionsApi
      * Get a promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \AllegroApi\Model\SellerRebateDto|\AllegroApi\Model\Errors, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getPromotionUsingGETWithHttpInfo($promotion_id, $details = null, $authenticated = null)
+    public function getPromotionUsingGETWithHttpInfo($promotion_id)
     {
-        $request = $this->getPromotionUsingGETRequest($promotion_id, $details, $authenticated);
+        $request = $this->getPromotionUsingGETRequest($promotion_id);
 
         try {
             $options = $this->createHttpClientOption();
@@ -825,15 +2335,13 @@ class PromotionsApi
      * Get a promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getPromotionUsingGETAsync($promotion_id, $details = null, $authenticated = null)
+    public function getPromotionUsingGETAsync($promotion_id)
     {
-        return $this->getPromotionUsingGETAsyncWithHttpInfo($promotion_id, $details, $authenticated)
+        return $this->getPromotionUsingGETAsyncWithHttpInfo($promotion_id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -847,16 +2355,14 @@ class PromotionsApi
      * Get a promotion by its id
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getPromotionUsingGETAsyncWithHttpInfo($promotion_id, $details = null, $authenticated = null)
+    public function getPromotionUsingGETAsyncWithHttpInfo($promotion_id)
     {
         $returnType = '\AllegroApi\Model\SellerRebateDto';
-        $request = $this->getPromotionUsingGETRequest($promotion_id, $details, $authenticated);
+        $request = $this->getPromotionUsingGETRequest($promotion_id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -896,13 +2402,11 @@ class PromotionsApi
      * Create request for operation 'getPromotionUsingGET'
      *
      * @param  string $promotion_id promotionId (required)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function getPromotionUsingGETRequest($promotion_id, $details = null, $authenticated = null)
+    protected function getPromotionUsingGETRequest($promotion_id)
     {
         // verify the required parameter 'promotion_id' is set
         if ($promotion_id === null || (is_array($promotion_id) && count($promotion_id) === 0)) {
@@ -918,14 +2422,6 @@ class PromotionsApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($details !== null) {
-            $queryParams['details'] = ObjectSerializer::toQueryValue($details);
-        }
-        // query params
-        if ($authenticated !== null) {
-            $queryParams['authenticated'] = ObjectSerializer::toQueryValue($authenticated);
-        }
 
         // path params
         if ($promotion_id !== null) {
@@ -979,15 +2475,9 @@ class PromotionsApi
             }
         }
 
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Api-Key');
-        if ($apiKey !== null) {
-            $headers['Api-Key'] = $apiKey;
-        }
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
-        if ($apiKey !== null) {
-            $headers['Authorization'] = $apiKey;
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
         }
 
         $defaultHeaders = [];
@@ -1018,16 +2508,14 @@ class PromotionsApi
      * @param  string $user_id user.id (required)
      * @param  int $limit limit (optional, default to 50)
      * @param  int $offset offset (optional, default to 0)
-     * @param  string $details details (optional)
-     * @param  bool $authenticated authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \AllegroApi\Model\SellerRebatesDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors
      */
-    public function listSellerPromotionsUsingGET1($user_id, $limit = 50, $offset = 0, $details = null, $authenticated = null)
+    public function listSellerPromotionsUsingGET1($user_id, $limit = 50, $offset = 0)
     {
-        list($response) = $this->listSellerPromotionsUsingGET1WithHttpInfo($user_id, $limit, $offset, $details, $authenticated);
+        list($response) = $this->listSellerPromotionsUsingGET1WithHttpInfo($user_id, $limit, $offset);
         return $response;
     }
 
@@ -1039,16 +2527,14 @@ class PromotionsApi
      * @param  string $user_id user.id (required)
      * @param  int $limit limit (optional, default to 50)
      * @param  int $offset offset (optional, default to 0)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \AllegroApi\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \AllegroApi\Model\SellerRebatesDto|\AllegroApi\Model\Errors|\AllegroApi\Model\Errors, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listSellerPromotionsUsingGET1WithHttpInfo($user_id, $limit = 50, $offset = 0, $details = null, $authenticated = null)
+    public function listSellerPromotionsUsingGET1WithHttpInfo($user_id, $limit = 50, $offset = 0)
     {
-        $request = $this->listSellerPromotionsUsingGET1Request($user_id, $limit, $offset, $details, $authenticated);
+        $request = $this->listSellerPromotionsUsingGET1Request($user_id, $limit, $offset);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1171,15 +2657,13 @@ class PromotionsApi
      * @param  string $user_id user.id (required)
      * @param  int $limit limit (optional, default to 50)
      * @param  int $offset offset (optional, default to 0)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listSellerPromotionsUsingGET1Async($user_id, $limit = 50, $offset = 0, $details = null, $authenticated = null)
+    public function listSellerPromotionsUsingGET1Async($user_id, $limit = 50, $offset = 0)
     {
-        return $this->listSellerPromotionsUsingGET1AsyncWithHttpInfo($user_id, $limit, $offset, $details, $authenticated)
+        return $this->listSellerPromotionsUsingGET1AsyncWithHttpInfo($user_id, $limit, $offset)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1195,16 +2679,14 @@ class PromotionsApi
      * @param  string $user_id user.id (required)
      * @param  int $limit limit (optional, default to 50)
      * @param  int $offset offset (optional, default to 0)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listSellerPromotionsUsingGET1AsyncWithHttpInfo($user_id, $limit = 50, $offset = 0, $details = null, $authenticated = null)
+    public function listSellerPromotionsUsingGET1AsyncWithHttpInfo($user_id, $limit = 50, $offset = 0)
     {
         $returnType = '\AllegroApi\Model\SellerRebatesDto';
-        $request = $this->listSellerPromotionsUsingGET1Request($user_id, $limit, $offset, $details, $authenticated);
+        $request = $this->listSellerPromotionsUsingGET1Request($user_id, $limit, $offset);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1246,13 +2728,11 @@ class PromotionsApi
      * @param  string $user_id user.id (required)
      * @param  int $limit limit (optional, default to 50)
      * @param  int $offset offset (optional, default to 0)
-     * @param  string $details (optional)
-     * @param  bool $authenticated (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function listSellerPromotionsUsingGET1Request($user_id, $limit = 50, $offset = 0, $details = null, $authenticated = null)
+    protected function listSellerPromotionsUsingGET1Request($user_id, $limit = 50, $offset = 0)
     {
         // verify the required parameter 'user_id' is set
         if ($user_id === null || (is_array($user_id) && count($user_id) === 0)) {
@@ -1279,14 +2759,6 @@ class PromotionsApi
         // query params
         if ($offset !== null) {
             $queryParams['offset'] = ObjectSerializer::toQueryValue($offset);
-        }
-        // query params
-        if ($details !== null) {
-            $queryParams['details'] = ObjectSerializer::toQueryValue($details);
-        }
-        // query params
-        if ($authenticated !== null) {
-            $queryParams['authenticated'] = ObjectSerializer::toQueryValue($authenticated);
         }
 
 
@@ -1333,15 +2805,9 @@ class PromotionsApi
             }
         }
 
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Api-Key');
-        if ($apiKey !== null) {
-            $headers['Api-Key'] = $apiKey;
-        }
-        // this endpoint requires API key authentication
-        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
-        if ($apiKey !== null) {
-            $headers['Authorization'] = $apiKey;
+        // this endpoint requires OAuth (access token)
+        if ($this->config->getAccessToken() !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
         }
 
         $defaultHeaders = [];

@@ -55,7 +55,8 @@ class IntegerCategoryParameter extends CategoryParameter
       * @var string[]
       */
     protected static $openAPITypes = [
-        'restrictions' => 'object'
+        'type' => 'string',
+        'restrictions' => '\AllegroApi\Model\IntegerCategoryParameterRestrictions'
     ];
 
     /**
@@ -64,6 +65,7 @@ class IntegerCategoryParameter extends CategoryParameter
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'type' => null,
         'restrictions' => null
     ];
 
@@ -94,6 +96,7 @@ class IntegerCategoryParameter extends CategoryParameter
      * @var string[]
      */
     protected static $attributeMap = [
+        'type' => 'type',
         'restrictions' => 'restrictions'
     ];
 
@@ -103,6 +106,7 @@ class IntegerCategoryParameter extends CategoryParameter
      * @var string[]
      */
     protected static $setters = [
+        'type' => 'setType',
         'restrictions' => 'setRestrictions'
     ];
 
@@ -112,6 +116,7 @@ class IntegerCategoryParameter extends CategoryParameter
      * @var string[]
      */
     protected static $getters = [
+        'type' => 'getType',
         'restrictions' => 'getRestrictions'
     ];
 
@@ -171,6 +176,7 @@ class IntegerCategoryParameter extends CategoryParameter
     {
         parent::__construct($data);
 
+        $this->container['type'] = isset($data['type']) ? $data['type'] : 'INTEGER';
         $this->container['restrictions'] = isset($data['restrictions']) ? $data['restrictions'] : null;
     }
 
@@ -199,9 +205,33 @@ class IntegerCategoryParameter extends CategoryParameter
 
 
     /**
+     * Gets type
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param string|null $type type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->container['type'] = $type;
+
+        return $this;
+    }
+
+    /**
      * Gets restrictions
      *
-     * @return object|null
+     * @return \AllegroApi\Model\IntegerCategoryParameterRestrictions|null
      */
     public function getRestrictions()
     {
@@ -211,7 +241,7 @@ class IntegerCategoryParameter extends CategoryParameter
     /**
      * Sets restrictions
      *
-     * @param object|null $restrictions restrictions
+     * @param \AllegroApi\Model\IntegerCategoryParameterRestrictions|null $restrictions restrictions
      *
      * @return $this
      */
