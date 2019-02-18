@@ -4205,21 +4205,6 @@ components:
             type: string
       description: Offer's parameter
     CategoryParameter:
-      type: object
-      required:
-        - type
-      discriminator:
-        propertyName: type
-        mapping:
-          INTEGER: '#/components/schemas/IntegerCategoryParameter'
-          FLOAT: '#/components/schemas/FloatCategoryParameter'
-          STRING: '#/components/schemas/StringCategoryParameter'
-          DICTIONARY: '#/components/schemas/DictionaryCategoryParameter'
-      anyOf:
-        - $ref: '#/components/schemas/IntegerCategoryParameter'
-        - $ref: '#/components/schemas/FloatCategoryParameter'
-        - $ref: '#/components/schemas/StringCategoryParameter'
-        - $ref: '#/components/schemas/DictionaryCategoryParameter'
       properties:
         id:
           type: string
@@ -4336,7 +4321,18 @@ components:
         parameters:
           type: array
           items:
-            $ref: '#/components/schemas/CategoryParameter'
+            discriminator:
+              propertyName: type
+              mapping:
+                INTEGER: '#/components/schemas/IntegerCategoryParameter'
+                FLOAT: '#/components/schemas/FloatCategoryParameter'
+                STRING: '#/components/schemas/StringCategoryParameter'
+                DICTIONARY: '#/components/schemas/DictionaryCategoryParameter'
+              oneOf:
+                - $ref: '#/components/schemas/IntegerCategoryParameter'
+                - $ref: '#/components/schemas/FloatCategoryParameter'
+                - $ref: '#/components/schemas/StringCategoryParameter'
+                - $ref: '#/components/schemas/DictionaryCategoryParameter'
     Payment:
       type: object
       required:
