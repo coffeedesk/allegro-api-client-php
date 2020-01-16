@@ -47,7 +47,8 @@ class CheckoutFormStatus
     const BOUGHT = 'BOUGHT';
     const FILLED_IN = 'FILLED_IN';
     const READY_FOR_PROCESSING = 'READY_FOR_PROCESSING';
-    
+    const FULFILLMENT_STATUS_CHANGED = 'FULFILLMENT_STATUS_CHANGED';
+
     /**
      * Gets allowable values of the enum
      * @return string[]
