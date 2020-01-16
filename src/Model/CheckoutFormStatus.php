@@ -59,6 +59,7 @@ class CheckoutFormStatus
             self::BOUGHT,
             self::FILLED_IN,
             self::READY_FOR_PROCESSING,
+            self::FULFILLMENT_STATUS_CHANGED,
         ];
     }
 }
