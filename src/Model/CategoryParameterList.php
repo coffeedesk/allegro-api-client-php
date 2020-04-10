@@ -57,7 +57,7 @@ class CategoryParameterList implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'parameters' => '\AllegroApi\Model\CategoryParameter[]'
+        'parameters' => 'object[]'
     ];
 
     /**
@@ -207,7 +207,7 @@ class CategoryParameterList implements ModelInterface, ArrayAccess
     /**
      * Gets parameters
      *
-     * @return \AllegroApi\Model\CategoryParameter[]|null
+     * @return object[]|null
      */
     public function getParameters()
     {
@@ -217,7 +217,7 @@ class CategoryParameterList implements ModelInterface, ArrayAccess
     /**
      * Sets parameters
      *
-     * @param \AllegroApi\Model\CategoryParameter[]|null $parameters The list of parameters supported by the category.
+     * @param object[]|null $parameters parameters
      *
      * @return $this
      */
