@@ -114,6 +114,13 @@ To define configuration(\AllegroApi\Configuration) you can use factory pattern.
 
 ## Development
 
+### Generate php classes using openapi-generator
+
+ATTENTION!
+
+Please look at commit 070d13ed2d031c8361597aead4071a78b6317ba6 in this repo. Package openapi-generator always generate wrong CategoryParameters.php.
+You have to fix it every time you regenerate this code.
+
 To generate new clients and models run:
 ```
 docker run --rm \
@@ -127,3 +134,4 @@ openapitools/openapi-generator-cli generate \
 --api-package Client \
 --model-package Model
 ```
+

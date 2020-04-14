@@ -5,13 +5,16 @@ servers:
       environment:
         default: allegro.pl
         enum:
-          - allegro.pl         # Production server
-          - allegro.pl.allegrosandbox.pl     # Sandbox server
+          - allegro.pl                    # Production server
+          - allegro.pl.allegrosandbox.pl  # Sandbox server
 info:
   description: 'https://developer.allegro.pl/about'
   version: 'latest'
   title: Allegro REST API
   termsOfService: 'https://developer.allegro.pl/rules/'
+  contact:
+    name: "API Support"
+    url: 'https://github.com/allegro/allegro-api/issues'
 
 tags:
   - name: Public offer information
@@ -36,6 +39,7 @@ tags:
   - name: Badge campaigns
   - name: Delivery
   - name: Offer tags
+  - name: Offer rating
   - name: Order management
   - name: Payments
   - name: Disputes
@@ -43,6 +47,7 @@ tags:
   - name: Blacklist management
   - name: Auctions and Bidding
   - name: Billing
+  - name: Commission refunds
 
 security:
   - bearer-token-for-user: []
@@ -107,8 +112,6 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/Offer'
-        '201':
-          description: Created
         '400':
           description: Syntactically incorrect request
         '401':
@@ -204,6 +207,11 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: delivery.shippingRates.id.empty
+          in: query
+          description: Allow to filter offers by existence of shipping rates ID.
+          schema:
+            type: boolean
         - name: sort
           in: query
           description: >-
@@ -262,7 +270,7 @@ paths:
       parameters:
         - name: offerId
           in: path
-          description: offerId
+          description: Offer identifier.
           required: true
           schema:
             type: string
@@ -297,7 +305,7 @@ paths:
       parameters:
         - name: offerId
           in: path
-          description: offerId
+          description: Offer identifier.
           required: true
           schema:
             type: string
@@ -326,7 +334,7 @@ paths:
       parameters:
         - name: offerId
           in: path
-          description: offerId
+          description: Offer identifier.
           required: true
           schema:
             type: string
@@ -350,7 +358,7 @@ paths:
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -391,7 +399,7 @@ paths:
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -420,20 +428,20 @@ paths:
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -667,13 +675,13 @@ paths:
       parameters:
         - name: user.id
           in: query
-          description: 'Filter by user id, you are allowed to get your ratings only'
+          description: Filter by user id, you are allowed to get your ratings only.
           required: true
           schema:
             type: string
         - name: recommended
           in: query
-          description: Filter by recommended
+          description: Filter by recommended.
           required: false
           schema:
             type: string
@@ -682,7 +690,7 @@ paths:
               - 'false'
         - name: offset
           in: query
-          description: Offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -692,7 +700,7 @@ paths:
             default: 0
         - name: limit
           in: query
-          description: Limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
@@ -713,6 +721,80 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
+  /sale/user-ratings/{ratingId}/answer:
+    put:
+      tags:
+        - Information about user
+      summary: "Answer for user's rating"
+      description:
+        'Use this resource to answer for received rating.'
+      operationId: answerUserRatingUsingPUT
+      parameters:
+        - name: ratingId
+          in: path
+          description: ID of the rating.
+          required: true
+          schema:
+            type: string
+            example: "5df0a6d1ef437e00255572a1"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+        '400':
+          description: Bad request
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorsHolder'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        $ref: '#/components/requestBodies/UserRatingAnswerRequest'
+  /sale/user-ratings/{ratingId}/removal:
+    put:
+      tags:
+        - Information about user
+      summary: "Request removal of user's rating"
+      description:
+        'Use this resource to request removal of received rating.'
+      operationId: userRatingRemovalUsingPUT
+      parameters:
+        - name: ratingId
+          in: path
+          description: ID of the rating.
+          required: true
+          schema:
+            type: string
+            example: "5df0a6d1ef437e00255572a1"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/Removal'
+        '400':
+          description: Bad request
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorsHolder'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        $ref: '#/components/requestBodies/UserRatingRemovalRequest'
   /me:
     get:
       tags:
@@ -772,23 +854,26 @@ paths:
       parameters:
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
             default: 0
+            minimum: 0
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
-            default: 1000
+            default: 100
+            minimum: 1
+            maximum: 1000
         - name: user.id
           in: query
-          description: User ID
+          description: User identifier.
           required: true
           schema:
             type: string
@@ -808,7 +893,7 @@ paths:
       tags:
         - Sets and rebates
       summary: "Create a new promotion"
-      description: |
+      description: >-
         This endpoint creates a new promotion. You can define the following types of promotions:
 
         1. Bundle
@@ -1065,7 +1150,7 @@ paths:
       parameters:
         - name: promotionId
           in: path
-          description: promotionId
+          description: Promotion identifier.
           required: true
           schema:
             type: string
@@ -1094,7 +1179,7 @@ paths:
       parameters:
         - name: promotionId
           in: path
-          description: promotionId
+          description: Promotion identifier.
           required: true
           schema:
             type: string
@@ -1178,13 +1263,13 @@ paths:
       parameters:
         - name: promotion.id
           in: query
-          description: The promotion unique id
+          description: The promotion unique id.
           required: false
           schema:
             type: string
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
@@ -1192,7 +1277,7 @@ paths:
             default: 50
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -1234,13 +1319,13 @@ paths:
       parameters:
         - name: promotion.id
           in: query
-          description: The promotion unique id
+          description: The promotion unique id.
           required: true
           schema:
             type: string
         - name: campaign.id
           in: query
-          description: The campaign unique id
+          description: The campaign unique id.
           required: true
           schema:
             type: string
@@ -1283,7 +1368,7 @@ paths:
       parameters:
         - name: applicationId
           in: path
-          description: The application unique id
+          description: The application unique id.
           required: true
           schema:
             type: string
@@ -1325,7 +1410,7 @@ paths:
       parameters:
         - name: applicationId
           in: path
-          description: The application unique id
+          description: The application unique id.
           required: true
           schema:
             type: string
@@ -1454,7 +1539,7 @@ paths:
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -1495,7 +1580,7 @@ paths:
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -1524,20 +1609,20 @@ paths:
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -1561,10 +1646,11 @@ paths:
         - Batch offer modification
       summary: "Batch offer price modification"
       operationId: priceModificationCommandUsingPUT
+      description: "Change price of offers."
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -1594,11 +1680,12 @@ paths:
       tags:
         - Batch offer modification
       summary: "Change price command summary"
+      description: "Returns status and summary of particular command execution."
       operationId: getPriceModificationCommandStatusUsingGET
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -1618,25 +1705,25 @@ paths:
       tags:
         - Batch offer modification
       summary: "Change price command detailed report"
-      description: 'Defaults: limit = 100, offset = 0'
+      description: 'Defaults: limit = 100, offset = 0.'
       operationId: getPriceModificationCommandTasksStatusesUsingGET
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -1657,11 +1744,12 @@ paths:
       tags:
         - Batch offer modification
       summary: "Batch offer quantity modification"
+      description: "Change quantity of multiple offers."
       operationId: quantityModificationCommandUsingPUT
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -1691,11 +1779,12 @@ paths:
       tags:
         - Batch offer modification
       summary: "Change quantity command summary"
+      description: "Returns status and summary of the command."
       operationId: getQuantityModificationCommandStatusUsingGET
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
@@ -1715,25 +1804,25 @@ paths:
       tags:
         - Batch offer modification
       summary: 'Change quantity command detailed report'
-      description: 'Defaults: limit = 100, offset = 0'
+      description: 'Defaults: limit = 100, offset = 0.'
       operationId: getQuantityModificationCommandTasksStatusesUsingGET
       parameters:
         - name: commandId
           in: path
-          description: commandId
+          description: Command identifier.
           required: true
           schema:
             type: string
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -1772,13 +1861,13 @@ paths:
             type: string
             default: 954b95b6-43cf-4104-8354-dea4d9b10ddf
       responses:
-        200:
+        '200':
           description: The list of categories returned successfully.
           content:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/CategoriesDto'
-        404:
+        '404':
           description: The category with the given ID does not exist.
           content:
             application/vnd.allegro.public.v1+json:
@@ -1791,7 +1880,7 @@ paths:
       summary: 'Get a category by ID'
       description: >-
         Use this resource to get the details of a specific category.
-        <a href="../../news/2018-07-09-wielowariantowosc/#01" target="_blank">Read more</a>.
+        <a href="https://developer.allegro.pl/multi_variant_offers/#1" target="_blank">Read more</a>.
       operationId: getCategoryUsingGET_1
       security:
         - bearer-token-for-application: []
@@ -1805,13 +1894,13 @@ paths:
             type: string
             example: "6061"
       responses:
-        200:
+        '200':
           description: The details of a category returned successfully.
           content:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/CategoryDto'
-        404:
+        '404':
           description: The category with the given ID does not exist.
           content:
             application/vnd.allegro.public.v1+json:
@@ -1838,7 +1927,7 @@ paths:
             type: string
             example: "709"
       responses:
-        200:
+        '200':
           description: The list of parameters for the category returned successfully.
           content:
             application/vnd.allegro.public.v1+json:
@@ -1857,6 +1946,8 @@ paths:
                         options:
                           variantsAllowed: true
                           variantsEqual: false
+                          ambiguousValueId: null
+                          dependsOnParameterId: null
                         restrictions:
                           min: 0
                           max: 1000000
@@ -1873,6 +1964,8 @@ paths:
                         options:
                           variantsAllowed: false
                           variantsEqual: false
+                          ambiguousValueId: null
+                          dependsOnParameterId: null
                         restrictions:
                           minLength: 2
                           maxLength: 35
@@ -1889,19 +1982,27 @@ paths:
                         options:
                           variantsAllowed: false
                           variantsEqual: true
+                          ambiguousValueId: null
+                          dependsOnParameterId: null
                         dictionary:
                           - id: "11323_1"
                             value: "Nowy"
+                            "dependsOnValueIds": []
                           - id: "11323_2"
                             value: "Używany"
+                            "dependsOnValueIds": []
                           - id: "11323_238066"
                             value: "Po zwrocie"
+                            "dependsOnValueIds": []
                           - id: "11323_238058"
                             value: "Powystawowy"
+                            "dependsOnValueIds": []
                           - id: "11323_238062"
                             value: "Uszkodzony"
+                            "dependsOnValueIds": []
                           - id: "11323_246534"
                             value: "Odnowiony przez producenta"
+                            "dependsOnValueIds": []
                         restrictions:
                           multipleChoices: false
                 float:
@@ -1916,6 +2017,8 @@ paths:
                         options:
                           variantsAllowed: false
                           variantsEqual: false
+                          ambiguousValueId: null
+                          dependsOnParameterId: null
                         restrictions:
                           min: 0
                           max: 1000000
@@ -1933,12 +2036,14 @@ paths:
                         options:
                           variantsAllowed: false
                           variantsEqual: false
+                          ambiguousValueId: null
+                          dependsOnParameterId: null
                         restrictions:
                           min: 0
                           max: 1000
                           range: true
                           precision: 2
-        404:
+        '404':
           description: The category with the given ID does not exist.
           content:
             application/vnd.allegro.public.v1+json:
@@ -1966,7 +2071,7 @@ paths:
             type: string
             example: "709"
       responses:
-        200:
+        '200':
           description: 'The list of product parameters for the category returned successfully.'
           content:
             application/vnd.allegro.public.v1+json:
@@ -2051,7 +2156,7 @@ paths:
                           max: 1000
                           range: true
                           precision: 2
-        404:
+        '404':
           description: The category with the given ID does not exist.
           content:
             application/vnd.allegro.public.v1+json:
@@ -2068,23 +2173,26 @@ paths:
       parameters:
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
             default: 0
+            minimum: 0
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
             default: 100
+            minimum: 1
+            maximum: 1000
         - name: user.id
           in: query
-          description: User ID
+          description: User identifier.
           required: true
           schema:
             type: string
@@ -2110,7 +2218,7 @@ paths:
       parameters:
         - name: seller.id
           in: query
-          description: id of shipping rates owner
+          description: Shipping rates owner identifier.
           required: true
           schema:
             type: string
@@ -2194,7 +2302,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: id of shipping rates set
+          description: Shipping rates set identifier.
           required: true
           schema:
             type: string
@@ -2252,7 +2360,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: id of shipping rates set
+          description: Shipping rates set identifier.
           required: true
           schema:
             type: string
@@ -2372,7 +2480,7 @@ paths:
       parameters:
         - name: seller.id
           in: query
-          description: User ID
+          description: User identifier.
           required: true
           schema:
             type: string
@@ -2403,7 +2511,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Point of service ID
+          description: Point of service ID.
           required: true
           schema:
             type: string
@@ -2469,7 +2577,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Point of service ID
+          description: Point of service ID.
           required: true
           schema:
             type: string
@@ -2522,7 +2630,7 @@ paths:
       parameters:
         - name: seller.id
           in: query
-          description: id of contacts owner
+          description: Contacts owner identifier.
           required: true
           schema:
             type: string
@@ -2548,7 +2656,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Contact id
+          description: Contact identifier.
           required: true
           schema:
             type: string
@@ -2575,7 +2683,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Contact id
+          description: Contact identifier.
           required: true
           schema:
             type: string
@@ -2754,7 +2862,7 @@ paths:
       parameters:
         - name: groupId
           in: path
-          description: Additional Service Group ID
+          description: Additional Service Group ID.
           required: true
           schema:
             type: string
@@ -2779,7 +2887,7 @@ paths:
       parameters:
         - name: groupId
           in: path
-          description: additional service group ID
+          description: Additional service group ID.
           required: true
           schema:
             type: string
@@ -2807,7 +2915,7 @@ paths:
       parameters:
         - name: tableId
           in: path
-          description: tableId
+          description: Table identifier.
           required: true
           schema:
             type: string
@@ -2818,6 +2926,35 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/PublicTableDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sale/size-tables:
+    get:
+      tags:
+        - Size tables
+      summary: "Get the user's size tables"
+      description:
+        'Use this resource to get all size tables assigned to a seller account.
+           <a href="../../news/2018-04-19-news_tabele_rozmiarow/" target="_blank">Read more</a>.'
+      operationId: getTablesUsingGET
+      parameters:
+        - name: user.id
+          in: query
+          description: User identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Size tables returned successfully
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/PublicTablesDto'
         '401':
           description: Unauthorized
         '403':
@@ -2841,19 +2978,24 @@ paths:
             type: string
         - name: limit
           in: query
-          description: Limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
+            default: 60
+            minimum: 1
+            maximum: 60
         - name: offset
           in: query
-          description: Offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
             default: 0
+            minimum: 0
+            maximum: 59
       responses:
         '200':
           description: OK
@@ -2867,35 +3009,99 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  /sale/size-tables:
+    post:
+      tags:
+        - After sale services
+      summary: "Create new user's return policy"
+      description:
+        'Use this resource to create a return policy definition.'
+      operationId: createAfterSalesServiceReturnPolicyUsingPOST
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ReturnPolicyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: Return Policy
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/ReturnPolicyRequest'
+  /after-sales-service-conditions/return-policies/{returnPolicyId}:
     get:
       tags:
-        - Size tables
-      summary: "Get the user's size tables"
+        - After sale services
+      summary: "Get the user's return policy"
       description:
-        'Use this resource to get all size tables assigned to a seller account.
-         <a href="../../news/2018-04-19-news_tabele_rozmiarow/" target="_blank">Read more</a>.'
-      operationId: getTablesUsingGET
+        'Use this resource to get a return policy details.'
+      operationId: getAfterSalesServiceReturnPolicyUsingGET
       parameters:
-        - name: user.id
-          in: query
-          description: user.id
+        - name: returnPolicyId
+          in: path
+          description: The ID of the return policy.
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Size tables returned successfully
+          description: OK
           content:
             application/vnd.allegro.public.v1+json:
               schema:
-                $ref: '#/components/schemas/PublicTablesDto'
+                $ref: '#/components/schemas/ReturnPolicyResponse'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
+    put:
+      tags:
+        - After sale services
+      summary: "Change the user's return policy"
+      description:
+        'Use this resource to modify the return policy details.'
+      operationId: updateAfterSalesServiceReturnPolicyUsingPUT
+      parameters:
+        - name: returnPolicyId
+          in: path
+          description: The ID of the return policy.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ReturnPolicyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: Return Policy
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/ReturnPolicyRequest'
   /after-sales-service-conditions/implied-warranties:
     get:
       tags:
@@ -2913,19 +3119,24 @@ paths:
             type: string
         - name: limit
           in: query
-          description: Limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
+            default: 60
+            minimum: 1
+            maximum: 60
         - name: offset
           in: query
-          description: Offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
             default: 0
+            minimum: 0
+            maximum: 59
       responses:
         '200':
           description: OK
@@ -2940,6 +3151,333 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
+    post:
+      tags:
+        - After sale services
+      summary: "Create new user's implied warranty"
+      description:
+        'Use this resource to create an implied warranty definition.'
+      operationId: createAfterSalesServiceImpliedWarrantyUsingPOST
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ImpliedWarrantyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: Implied warranty
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/ImpliedWarrantyRequest'
+  /after-sales-service-conditions/implied-warranties/{impliedWarrantyId}:
+    get:
+      tags:
+        - After sale services
+      summary: "Get the user's implied warranty"
+      description:
+        'Use this resource to get an implied warranty details.'
+      operationId: getAfterSalesServiceImpliedWarrantyUsingGET
+      parameters:
+        - name: impliedWarrantyId
+          in: path
+          description: The ID of the implied warranty.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ImpliedWarrantyResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - After sale services
+      summary: "Change the user's implied warranty"
+      description:
+        'Use this resource to modify the implied warranty details.'
+      operationId: updateAfterSalesServiceImpliedWarrantyUsingPUT
+      parameters:
+        - name: impliedWarrantyId
+          in: path
+          description: The ID of the implied warranty.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ImpliedWarrantyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: Implied warranty
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/ImpliedWarrantyRequest'
+  /after-sales-service-conditions/warranties:
+    get:
+      tags:
+        - After sale services
+      summary: "Get the user's warranties"
+      description:
+        'Use this resource to get seller warranties listing. <a href="../../news/2017-04-05-news_warunki_oferty/" target="_blank">Read more</a>.'
+      operationId: getPublicSellerListingUsingGET_2
+      parameters:
+        - name: seller.id
+          in: query
+          description: Filter by user id. You are allowed to get your warranties only.
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: The limit of elements in the response.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 60
+            minimum: 1
+            maximum: 60
+        - name: offset
+          in: query
+          description: The offset of elements in the response.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+            minimum: 0
+            maximum: 59
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/WarrantiesList_WarrantyBasic_'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - After sale services
+      summary: "Create new user's warranty"
+      description:
+        'Use this resource to create a warranty definition.'
+      operationId: createAfterSalesServiceWarrantyUsingPOST
+      responses:
+        '201':
+          description: Created
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/WarrantyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: Warranty
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/WarrantyRequest'
+  /after-sales-service-conditions/warranties/{warrantyId}:
+    get:
+      tags:
+        - After sale services
+      summary: "Get the user's warranty"
+      description:
+        'Use this resource to get a warranty details.'
+      operationId: getAfterSalesServiceWarrantyUsingGET
+      parameters:
+        - name: warrantyId
+          in: path
+          description: The ID of the warranty.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/WarrantyResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - After sale services
+      summary: "Change the user's warranty"
+      description:
+        'Use this resource to modify the warranty details.'
+      operationId: updateAfterSalesServiceWarrantyUsingPUT
+      parameters:
+        - name: warrantyId
+          in: path
+          description: The ID of the warranty.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/WarrantyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        description: Warranty
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/WarrantyRequest'
+  /after-sales-service-conditions/attachments:
+    post:
+      tags:
+        - After sale services
+      summary: "Create a warranty attachment metadata"
+      description: >-
+        You can attach PDF files to warranties.
+
+        Uploading attachments flow:
+          1. Create an attachment object to receive an upload URL (*POST /after-sales-service-conditions/attachments*),
+          2. Use the upload URL to submit the PDF file (*PUT /after-sales-service-conditions/attachments/{attachmentId}*),
+          3. Create (or update) warranty with attachment (*POST /after-sales-service-conditions/warranties*).
+
+      operationId: createAfterSalesServiceConditionsAttachmentUsingPOST
+      responses:
+        '201':
+          description: Attachment created successfully.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/AfterSalesServicesAttachment'
+        '400':
+          description: Syntactically incorrect request.
+        '401':
+          description: Invalid or missing bearer token.
+        '415':
+          description: Unsupported media type.
+        '422':
+          description: Unprocessable Entity.
+      requestBody:
+        description: After sale services attachment
+        required: true
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'uploaded_file.pdf'
+  /after-sales-service-conditions/attachments/{attachmentId}:
+    put:
+      tags:
+        - After sale services
+      summary: "Upload an warranty attachment"
+      description: >-
+        Upload an after sale services attachment.
+
+        This operation should be used after creating an offer attachment with *POST /sale/offer-attachments*
+
+        **Important!** You can find the URL address to upload the file to our server in the *Location* response header of *POST /after-sales-service-conditions/attachments*.
+        The URL is unique and one-time. As its format may change in time, you should always use the address from the header.
+        Do not compose the address on your own.
+      operationId: uploadAfterSalesServiceConditionsAttachmentUsingPUT
+      parameters:
+        - name: attachmentId
+          in: path
+          description: The ID of the attachment.
+          required: true
+          schema:
+            type: string
+      servers:
+        - url: https://upload.{environment}
+          variables:
+            environment:
+              default: allegro.pl
+              enum:
+                - allegro.pl
+                - allegro.pl.allegrosandbox.pl
+      requestBody:
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+              description: File in a binary format
+      responses:
+        '200':
+          description: File uploaded correctly.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/AfterSalesServicesAttachment'
+        '400':
+          description: Syntactically incorrect request.
+        '401':
+          description: Invalid or missing bearer token.
+        '404':
+          description: Not found.
+        '413':
+          description: Payload too large.
+        '422':
+          description: Invalid file content.
   /pricing/offer-quotes:
     get:
       tags:
@@ -2954,13 +3492,14 @@ paths:
       operationId: offerQuotesPublicUsingGET
       parameters:
         - name: name
+          description: Offer quote name.
           in: query
           required: false
           schema:
             type: string
         - name: offer.id
           in: query
-          description: 'List of offer ids, maximum 20 values'
+          description: 'List of offer Ids, maximum 20 values.'
           required: true
           allowEmptyValue: false
           explode: true
@@ -2989,56 +3528,13 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/ErrorsHolder'
-  /after-sales-service-conditions/warranties:
-    get:
-      tags:
-        - After sale services
-      summary: "Get the user's warranties"
-      description:
-        'Use this resource to get seller warranties listing. <a href="../../news/2017-04-05-news_warunki_oferty/" target="_blank">Read more</a>.'
-      operationId: getPublicSellerListingUsingGET_2
-      parameters:
-        - name: seller.id
-          in: query
-          description: Filter by user id. You are allowed to get your warranties only.
-          required: true
-          schema:
-            type: string
-        - name: limit
-          in: query
-          description: Limit
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: offset
-          in: query
-          description: Offset
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.allegro.public.v1+json:
-              schema:
-                $ref: '#/components/schemas/WarrantiesList_WarrantyBasic_'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  '/sale/offer-variants/{setId}':
-    put:
+  '/sale/offer-variants':
+    post:
       tags:
         - Offer variants
-      summary: '[BETA] Create or update variant set'
+      summary: 'Create variant set'
       description: >-
-        [BETA] Use this resource to create or update variant set.
+        Use this resource to create variant set.
 
          A valid variant set must consist of three required elements:
          - name:
@@ -3062,86 +3558,20 @@ paths:
            - offer with id 5 having an image of a blue t-shirt and M as a value of parameter with id 21
 
 
-         You can build a variant set by grouping offers using combination of available parameters:
-           - variant set with offer parameter only
-           ```
-             {
-               "name": "t-shirt",
-               "offers": [
-                 {
-                   "id": "2"
-                 },
-                 {
-                   "id": "3"
-                 }
-               ],
-               "parameters": [
-                 { "id": "21" }
-               ]
-             }
-           ```
-           - variant set with `color/pattern` parameter only
-           ```
-             {
-               "name": "t-shirt",
-               "offers": [
-                 {
-                   "id": "2",
-                   "colorPattern": "red"
-                 },
-                 {
-                   "id": "4",
-                   "colorPattern": "blue"
-                 }
-               ],
-               "parameters": [
-                 {"id": "color/pattern"}
-               ]
-             }
-           ```
-           - variant set with offer and `color/pattern` parameters
-           ```
-             {
-               "name": "t-shirt",
-               "offers": [
-                 {
-                   "id": "2",
-                   "colorPattern": "red"
-                 },
-                 {
-                   "id": "3",
-                   "colorPattern": "red"
-                 },
-                 {
-                   "id": "4",
-                   "colorPattern": "blue"
-                 },
-                 {
-                   "id": "5",
-                   "colorPattern": "blue"
-                 }
-               ],
-               "parameters": [
-                 {"id": "color/pattern"},
-                 {"id": "21"}
-               ]
-             }
-           ```
+         You can build a variant set by grouping offers using combination of available parameters - examples are available in <i>Request samples</i>.
 
 
-           More general information about variant sets can be found [here](https://allegro.pl/pomoc/faq/wielowariantowosc-jak-polaczyc-oferty-xGgaOByGgTb#dodatkowe-informacje),
-           more information about variant sets API can be found <a href="../../news/2018-07-09-wielowariantowosc/#03" target="_blank">here</a>.
-      operationId: createOrUpdateVariantSet
-      parameters:
-        - name: setId
-          in: path
-          description: Variant set id
-          required: true
-          schema:
-            type: string
+         More general information about variant sets can be found [here](https://allegro.pl/pomoc/faq/wielowariantowosc-jak-polaczyc-oferty-xGgaOByGgTb#dodatkowe-informacje),
+         more information about variant sets API can be found <a href="https://developer.allegro.pl/multi_variant_offers/#3" target="_blank">here</a>.
+      operationId: createVariantSet
       responses:
         '201':
-          description: Variant set created or updated successfully
+          description: Variant set created successfully
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/VariantSetResponse'
+
         '401':
           description: Unauthorized
         '403':
@@ -3153,64 +3583,11 @@ paths:
     get:
       tags:
         - Offer variants
-      summary: '[BETA] Get a variant set'
-      description:
-        '[BETA] Use this resource to get variant set by set id. <a href="../../news/2018-07-09-wielowariantowosc/#04" target="_blank">Read more</a>.'
-      operationId: getVariantSet
-      parameters:
-        - name: setId
-          in: path
-          description: setId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Variant set returned successfully
-          content:
-            application/vnd.allegro.beta.v1+json:
-              schema:
-                $ref: '#/components/schemas/VariantSet'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-    delete:
-      tags:
-        - Offer variants
-      summary: '[BETA] Delete a variant set'
+      summary: "Get the user's variant sets"
       description: >-
-        [BETA] Use this resource to delete variant set by id.
-        Offers included in variant set will not be stopped or modified by this operation.
-        <a href="../../news/2018-07-09-wielowariantowosc/#05" target="_blank">Read more</a>.
-      operationId: deleteVariantSet
-      parameters:
-        - name: setId
-          in: path
-          description: Variant set id
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Variant set deleted successfully
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Variant set not found
-  '/sale/offer-variants':
-    get:
-      tags:
-        - Offer variants
-      summary: "[BETA] Get the user's variant sets"
-      description: >-
-        [BETA] Use this resource to get created variant sets.
+        Use this resource to get created variant sets.
         The returned variant sets are ordered by name.
-        <a href="../../news/2018-07-09-wielowariantowosc/" target="_blank">Read more</a>.
+        <a href="https://developer.allegro.pl/multi_variant_offers/#6" target="_blank">Read more</a>.
       operationId: getVariantSets
       parameters:
         - name: user.id
@@ -3227,6 +3604,7 @@ paths:
             type: integer
             default: 0
             minimum: 0
+            maximum: 9950
         - name: limit
           in: query
           description: Maximum number of returned variant sets.
@@ -3247,23 +3625,130 @@ paths:
         '200':
           description: Variant sets returned successfully
           content:
-            application/vnd.allegro.beta.v1+json:
+            application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/VariantSets'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
+  '/sale/offer-variants/{setId}':
+    put:
+      tags:
+        - Offer variants
+      summary: 'Update variant set'
+      description: >-
+        Use this resource to create variant set.
+
+         A valid variant set must consist of three required elements:
+         - name:
+           - it can't be blank and must not be longer than 50 characters
+         - parameters:
+           - it should contain parameter identifiers used for offer grouping
+           - parameter identifiers from the offers and special `color/pattern` value (for grouping via image) are permitted
+           - it must contain at least one element (up to 2)
+         - offers:
+           - it must contain at least 2 offers (500 at most)
+           - `colorPattern` value must be set for every offer if `color/pattern` parameter is used
+           - `colorPattern` value can't be blank and must not be longer than 50 characters
+           - `colorPattern` can take arbitrary string value like `red`, `b323592c-522f-4ec1-b9ea-3764538e0ac4` (UUID), etc.
+           - offers having the same image should have identical `colorPattern` value
+
+
+         Let's assume we have 4 offers:
+           - offer with id 2 having an image of a red t-shirt and S as a value of parameter with id 21
+           - offer with id 3 having an image of a red t-shirt and M as a value of parameter with id 21
+           - offer with id 4 having an image of a blue t-shirt and S as a value of parameter with id 21
+           - offer with id 5 having an image of a blue t-shirt and M as a value of parameter with id 21
+
+
+         You can build a variant set by grouping offers using combination of available parameters - examples are available in <i>Request samples</i>.
+
+
+         More general information about variant sets can be found [here](https://allegro.pl/pomoc/faq/wielowariantowosc-jak-polaczyc-oferty-xGgaOByGgTb#dodatkowe-informacje),
+         more information about variant sets API can be found <a href="https://developer.allegro.pl/multi_variant_offers/#3" target="_blank">here</a>.
+      operationId: updateVariantSet
+      parameters:
+        - name: setId
+          in: path
+          description: Variant set identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Variant set updated successfully
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/VariantSetResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        $ref: '#/components/requestBodies/VariantSetRequest'
+    get:
+      tags:
+        - Offer variants
+      summary: 'Get a variant set'
+      description:
+        'Use this resource to get variant set by set id. <a href="https://developer.allegro.pl/multi_variant_offers/#4" target="_blank">Read more</a>.'
+      operationId: getVariantSet
+      parameters:
+        - name: setId
+          in: path
+          description: Variant set identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Variant set returned successfully
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/VariantSetResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Offer variants
+      summary: 'Delete a variant set'
+      description: >-
+        Use this resource to delete variant set by id.
+        Offers included in variant set will not be stopped or modified by this operation.
+        <a href="https://developer.allegro.pl/multi_variant_offers/#5" target="_blank">Read more</a>.
+      operationId: deleteVariantSet
+      parameters:
+        - name: setId
+          in: path
+          description: Variant set identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Variant set deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Variant set not found
   '/sale/images':
     post:
       tags:
         - Images and attachments
       summary: "Upload an offer image"
-      description: |
+      description: >-
         Upload image to our servers.
-
-        More information about rules for photos in an offer's gallery and description you will find
-        <a href="https://allegro.pl/dla-sprzedajacych/nowe-zasady-dla-zdjec-w-galerii-i-w-opisie-YLlAAa2oXf7" target="_blank">here</a>.
 
         You can choose from two upload options:
           * \- provide a link and we will download an image for you
@@ -3272,6 +3757,9 @@ paths:
         **Important!** Remember to use dedicated domain for upload, i.e.
           * \- https://upload.allegro.pl for Production
           * \- https://upload.allegro.pl.allegrosandbox.pl for Sandbox
+
+        More information about rules for photos in an offer's gallery and description you will find
+        <a href="https://allegro.pl/dla-sprzedajacych/nowe-zasady-dla-zdjec-w-galerii-i-w-opisie-YLlAAa2oXf7" target="_blank">here</a>.
       operationId: uploadOfferImageUsingPOST
       servers:
         - url: https://upload.{environment}
@@ -3303,10 +3791,11 @@ paths:
       tags:
         - Images and attachments
       summary: "Create an offer attachment"
-      description: |
-        You can upload PDF attachments to your offers.
+      description: >-
+        You can attach PDF files to your offers.
         We will present them under the offer description in the Additional information section.
-        You can upload up to 7 attachments – one per item from the list:
+
+        You can attach up to 7 files to one offer – one per each type from the list:
           * \- Guide (MANUAL)
           * \- Special offer terms (SPECIAL_OFFER_RULES)
           * \- Competition terms (COMPETITION_RULES)
@@ -3318,7 +3807,7 @@ paths:
         Uploading attachments flow:
           1. Create an attachment object to receive an upload URL (*POST /sale/offer-attachments*),
           2. Use the upload URL to submit the PDF file (*PUT /sale/offer-attachments/{attachmentId}*),
-          3. Add the attachment to the offer (*PUT /sale/offers/{offerId}*).
+          3. Add attachments to the offer (*PUT /sale/offers/{offerId}*).
 
       operationId: createOfferAttachmentUsingPOST
       responses:
@@ -3343,7 +3832,7 @@ paths:
       tags:
         - Images and attachments
       summary: "Upload an offer attachment"
-      description: |
+      description: >-
         Upload an offer attachment.
 
         This operation should be used after creating an offer attachment with *POST /sale/offer-attachments*
@@ -3494,7 +3983,7 @@ paths:
           schema:
             type: boolean
             default: true
-        - name: "\"A filter's ID\""
+        - name: "Dynamic filters"
           in: query
           description: >-
             You can filter and customize your search results to find exactly what you need by applying filters ids and their dictionary values to query according to the flowing pattern: id=value.
@@ -3525,11 +4014,17 @@ paths:
                 	]
                 }
               ````
-            You can use 'Stan' filter to query results, i.e.: parameter.11323=11323_1 (for "nowe"), parameter.11323=11323_2 (for "używane") or parameter.11323=11323_238066 (for "po zwrocie")
-          example: 127448=2
+            You can use 'Stan' filter to query results, i.e.:
+              * `parameter.11323=11323_1` for "nowe"
+              * `parameter.11323=11323_2` for "używane"
+              * `parameter.11323=11323_238066` for "po zwrocie".
           required: false
           schema:
-            type: string
+            type: object
+            additionalProperties:
+              x-additionalPropertiesName: filter's id
+              type: string
+              description: Filter value.
       responses:
         '200':
           description: The request successfully returns the search result.
@@ -3582,7 +4077,7 @@ paths:
       parameters:
         - name: from
           in: query
-          description: 'You can use the event ID to retrieve subsequent chunks of events'
+          description: 'You can use the event ID to retrieve subsequent chunks of events.'
           required: false
           schema:
             type: string
@@ -3593,7 +4088,8 @@ paths:
             Allowed values are:
               * `BOUGHT`: purchase without checkout form filled in
               * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change
-              * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing.
+              * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing
+              * `FULFILLMENT_STATUS_CHANGED`: fulfillment status changed.
           required: false
           schema:
             type: array
@@ -3601,11 +4097,13 @@ paths:
               type: string
         - name: limit
           in: query
-          description: 'Limit in the range of 1-1000'
+          description: 'The maximum number of events returned in the response.'
           required: false
           schema:
             type: integer
             format: int32
+            minimum: 1
+            maximum: 1000
             default: 100
       responses:
         '200':
@@ -3651,37 +4149,62 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
+            default: 0
         - name: limit
           in: query
           description: >-
-            Maximum number of checkout-forms in response (acceptable values: from 0 to
-            100, default is 100).
+            Maximum number of checkout-forms in response.
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
         - name: status
           in: query
           schema:
             type: string
-          description: >
+          description: >-
             Specify status value that checkout-forms must have to be included in the output.
             Allowed values are:
-              * `BOUGHT`: purchase without checkout form filled in
-              * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change
+              * `BOUGHT`: purchase without checkout form filled in.
+              * `FILLED_IN`: checkout form filled in but payment is not completed yet so data could still change.
               * `READY_FOR_PROCESSING`: payment completed. Purchase is ready for processing.
-              * `ALL`: return all checkout-forms
+        - name: fulfillment.status
+          in: query
+          schema:
+            type: string
+          description: >-
+            Specify seller status value that checkout-forms must have to be included in the output.
+            Allowed values are:
+              * `NEW`
+              * `PROCESSING`
+              * `READY_FOR_SHIPMENT`
+              * `SENT`
+              * `CANCELLED`.
+        - name: fulfillment.shipmentSummary.lineItemsSent
+          in: query
+          schema:
+            type: string
+          description: >-
+            Specify filter for line items sending status.
+            Allowed values are:
+              * `NONE`: none of line items have tracking number specified
+              * `SOME`: some of line items have tracking number specified
+              * `ALL`: all of line items have tracking number specified.
         - name: lineItems.boughtAt.lte
           in: query
           schema:
             type: string
             format: date-time
-          description: The upper bound of date time range from which checkout forms will be taken.
+          description: Latest line item bought date. The upper bound of date time range from which checkout forms will be taken.
         - name: lineItems.boughtAt.gte
           in: query
           schema:
             type: string
             format: date-time
-          description: The lower bound of date time range from which checkout forms will be taken.
+          description: Latest line item bought date. The lower bound of date time range from which checkout forms will be taken.
         - name: payment.id
           in: query
           schema:
@@ -3692,6 +4215,41 @@ paths:
           schema:
             type: string
           description: Find checkout-forms having specified surcharge id.
+        - name: delivery.method.id
+          in: query
+          schema:
+            type: string
+          description: Find checkout-forms having specified delivery method id.
+        - name: buyer.login
+          in: query
+          schema:
+            type: string
+          description: Find checkout-forms having specified buyer login.
+        - name: updatedAt.lte
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Checkout form last modification date. The upper bound of date time range from which checkout forms will be taken.
+        - name: updatedAt.gte
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Checkout form last modification date. The lower bound of date time range from which checkout forms will be taken.
+        - name: sort
+          in: query
+          description: >-
+            The results' sorting order. No prefix in the value means ascending order. `-` prefix means descending order.
+            If you don't provide the sort parameter, the list is sorted by line item boughtAt date, descending.
+          required: false
+          schema:
+            type: string
+            enum:
+              - lineItems.boughtAt
+              - -lineItems.boughtAt
+              - updatedAt
+              - -updatedAt
       responses:
         '200':
           description: OK
@@ -3719,7 +4277,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Checkout Form id
+          description: Checkout form identifier.
           required: true
           schema:
             type: string
@@ -3732,6 +4290,44 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/CheckoutForm'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+  '/order/carriers':
+    get:
+      tags:
+        - Order management
+      summary: "Get a list of available shipping carriers"
+      description: >-
+        Shipping carriers are essential to provide accurate tracking experience for customers.
+        Use this resource to get a list of all available shipping carriers.
+
+
+        The response of this resource can be stored in accordance with returned caching headers.
+      operationId: getOrdersCarriersUsingGET
+      security:
+        - bearer-token-for-application: []
+        - bearer-token-for-user: []
+      responses:
+        '200':
+          description: List of available shipping carriers.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/OrdersShippingCarriersResponse'
+              examples:
+                order-carriers:
+                  summary: Order carriers
+                  value:
+                    carriers:
+                      - id: 'POCZTA_POLSKA'
+                        name: 'Poczta Polska'
+                      - id: 'DHL'
+                        name: 'DHL'
+                      - id: 'YUN_EXPRESS'
+                        name: 'Yun Express'
+                      - id: 'OTHER'
         '401':
           description: Unauthorized
         '404':
@@ -3750,7 +4346,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Order identifier
+          description: Order identifier.
           required: true
           schema:
             type: string
@@ -3776,7 +4372,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Order identifier
+          description: Order identifier.
           required: true
           schema:
             type: string
@@ -3810,6 +4406,41 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/ErrorsHolder'
+  '/order/checkout-forms/{id}/fulfillment':
+    put:
+      tags:
+        - Order management
+      summary: "Set seller order status"
+      description: >-
+        Use to set seller order status.
+      operationId: setOrderFulfillmentUsingPUT
+      parameters:
+        - name: id
+          in: path
+          description: Order identifier.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/CheckoutFormFulfillment'
+        description: request
+        required: true
+      responses:
+        '204':
+          description: Fulfillment set successfully
+        '401':
+          description: Authentication failed, e.g. token is expired
+        '404':
+          description: Order not found or doesn’t belong to the seller
+        '422':
+          description: Some of the provided data is invalid, e.g. unrecognized status value
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorsHolder'
   '/sale/disputes':
     get:
       tags:
@@ -3822,12 +4453,31 @@ paths:
       parameters:
         - name: checkoutForm.id
           in: query
-          description: CheckoutForm id
+          description: Checkout form identifier.
           required: false
           schema:
             type: string
             format: uuid
           example: "29738e61-7f6a-11e8-ac45-09db60ede9d6"
+        - name: limit
+          in: query
+          description: The maximum number of disputes in a response.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Index of first returned dispute.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
       responses:
         '200':
           description: OK
@@ -3850,7 +4500,7 @@ paths:
       parameters:
         - name: disputeId
           in: path
-          description: Id of the dispute
+          description: Dispute identifier.
           required: true
           schema:
             type: string
@@ -3879,11 +4529,30 @@ paths:
       parameters:
         - name: disputeId
           in: path
-          description: Id of the dispute
+          description: Dispute identifier.
           required: true
           schema:
             type: string
             format: uuid
+        - name: limit
+          in: query
+          description: The maximum number of messages within dispute returned in a response.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Index of first returned message within dispute.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
       responses:
         '200':
           description: OK
@@ -3904,7 +4573,7 @@ paths:
       parameters:
         - name: disputeId
           in: path
-          description: Id of the dispute
+          description: Dispute identifier.
           required: true
           schema:
             type: string
@@ -3963,7 +4632,7 @@ paths:
       tags:
         - Disputes
       summary: "Upload a dispute message attachment"
-      description: |
+      description: >-
         Upload a dispute message attachment.
 
         This operation should be used after creating an attachment declaration with *POST /sale/dispute-attachments*
@@ -3977,7 +4646,7 @@ paths:
         - name: attachmentId
           in: path
           required: true
-          description: The attachment ID
+          description: Attachment identifier.
           schema:
             type: string
             format: uuid
@@ -4043,7 +4712,7 @@ paths:
       parameters:
         - name: attachmentId
           in: path
-          description: Id of the attachment resource
+          description: Attachment identifier.
           required: true
           schema:
             type: string
@@ -4074,14 +4743,14 @@ paths:
       parameters:
         - in: "query"
           name: "lineItemId"
-          description: "line item id"
+          description: Line item identifier.
           required: false
           schema:
             type: string
             format: uuid
         - in: "query"
           name: "dealId"
-          description: "dealId"
+          description: Deal identifier.
           required: false
           schema:
             type: string
@@ -4103,7 +4772,7 @@ paths:
       tags:
         - Offer tags
       summary: "Create a tag"
-      description: |
+      description: >-
         Use this resource to create a new tag. <a href="../../news/2018-09-24-tagi-zalaczniki/#DodajDoKonta" target="_blank">Read more</a>.
       operationId: createTagPOST_1
       responses:
@@ -4157,20 +4826,20 @@ paths:
       parameters:
         - name: user.id
           in: query
-          description: user.id
+          description: User identifier.
           required: true
           schema:
             type: string
         - name: limit
           in: query
-          description: limit
+          description: The limit of elements in the response.
           required: false
           schema:
             type: integer
             format: int32
         - name: offset
           in: query
-          description: offset
+          description: The offset of elements in the response.
           required: false
           schema:
             type: integer
@@ -4206,7 +4875,7 @@ paths:
       parameters:
         - name: tagId
           in: path
-          description: tagId
+          description: Tag identifier.
           required: true
           schema:
             type: string
@@ -4241,7 +4910,7 @@ paths:
       parameters:
         - name: tagId
           in: path
-          description: tagId
+          description: Tag identifier.
           required: true
           schema:
             type: string
@@ -4280,13 +4949,13 @@ paths:
       tags:
         - Offer tags
       summary: "Assign tags to an offer"
-      description: |
+      description: >-
         Use this resource to assign a tag to offer. <a href="../../news/2018-09-24-tagi-zalaczniki/#PrzypiszTagiDoOferty" target="_blank">Read more</a>.
       operationId: assignTagToOfferPOST
       parameters:
         - name: offerId
           in: path
-          description: offerId
+          description: Offer identifier.
           required: true
           schema:
             type: string
@@ -4336,7 +5005,7 @@ paths:
       parameters:
         - name: offerId
           in: path
-          description: offerId
+          description: Offer identifier.
           required: true
           schema:
             type: string
@@ -4359,18 +5028,51 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/ErrorsHolder'
+
+  '/sale/offers/{offerId}/rating':
+    get:
+      tags:
+        - Offer rating
+      summary: "Get offer rating"
+      description: 'Use this resource to get offer rating.'
+      operationId: offerRatingGET
+      parameters:
+        - name: offerId
+          in: path
+          description: Offer identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/OfferRating'
+        '403':
+          description: Offer access denied.
+        '404':
+          description: Offer not found.
+        '401':
+          description: Unauthorized action.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+
   '/sale/offers/{offerId}/shipping-rates':
     get:
       tags:
         - Delivery
       summary: "[BETA] Get shipping rates assigned to an offer"
       description: >-
-        Use this resource to get the delivery methods and costs defined in the offer when there is no seller's shipping rates set attached to offer
+        Use this resource to get the delivery methods and costs defined in the offer when there is no seller's shipping rates set attached to offer.
       operationId: getOfferShippingRatesGET
       parameters:
         - name: offerId
           in: path
-          description: offerId
+          description: Offer identifier.
           required: true
           schema:
             type: string
@@ -4423,7 +5125,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: "\"A filter's ID\""
+        - name: "Dynamic filters"
           in: query
           description: >-
             You can filter and customize your search results to find exactly what you need by applying filters ids and their dictionary values to query according to the flowing pattern: id=value.
@@ -4444,11 +5146,16 @@ paths:
                 ]
               }
               ````
-            You can use 'Kolor' filter to query results, i.e.: 127448=2 (for "biały") or 127448=1 (for "czarny")
-          example: 127448=2
+            You can use 'Kolor' filter to query results, i.e.:
+              * `127448=2` for "biały"
+              * `127448=1` for "czarny".
           required: false
           schema:
-            type: string
+            type: object
+            additionalProperties:
+              x-additionalPropertiesName: filter's id
+              type: string
+              description: Filter value.
         - name: page.id
           in: query
           description: A "cursor" to the next set of results.
@@ -4563,9 +5270,10 @@ paths:
   '/sale/compatibility-list/supported-categories':
     get:
       tags:
-      - Compatibility List
+        - Compatibility List
       summary: 'Get list of categories where compatibility list is supported'
       description: 'Compatibility list is available in particular categories, this resource allows to get the list of these categories with additional details.'
+      operationId: "getCategoriesThatSupportCompatibilityList"
       responses:
         '200':
           description: 'Configuration of supported categories.'
@@ -4578,9 +5286,10 @@ paths:
   '/sale/compatible-products/groups':
     get:
       tags:
-      - Compatibility List
+        - Compatibility List
       summary: 'Get list of compatible product groups'
       description: 'Compatible products are organized in groups, this resource allows to browse these groups.'
+      operationId: 'getCompatibleProductsGroups'
       parameters:
         - name: If-Modified-Since
           in: header
@@ -4607,6 +5316,8 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 200
             default: 200
         - name: offset
           in: query
@@ -4614,6 +5325,7 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
             default: 0
       responses:
         '200':
@@ -4635,73 +5347,77 @@ paths:
   '/sale/compatible-products':
     get:
       tags:
-      - Compatibility List
+        - Compatibility List
       summary: 'Get list of compatible products'
       description: 'Resource allows to fetch compatible products of given type.'
+      operationId: "getCompatibleProducts"
       parameters:
-      - name: If-Modified-Since
-        in: header
-        description: 'Date of last data modification. If data has been modified after specified date,
+        - name: If-Modified-Since
+          in: header
+          description: 'Date of last data modification. If data has been modified after specified date,
                       full set of data is returned. If header is not specified, full set of data
                       is returned. Date has to be provided in HTTP-date format.
                       Header is ignored if `phrase` parameter is used.'
-        required: false
-        schema:
-          type: string
-          format: '<day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT'
-          example: 'Mon, 01 Dec 2018 10:00:00 GMT'
-      - name: type
-        in: query
-        description: 'Type of compatible products. You can find available types in the response
+          required: false
+          schema:
+            type: string
+            format: '<day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT'
+            example: 'Mon, 01 Dec 2018 10:00:00 GMT'
+        - name: type
+          in: query
+          description: 'Type of compatible products. You can find available types in the response
                      for the GET <a href="/documentation/#tag/Compatibility-List/paths/~1sale~1compatibility-list~1supported-categories/get">supported-categories</a> resource.
                      You can use value provided in `itemsType`, for categories where `inputType=ID`.'
-        required: true
-        schema:
-          type: string
-          example: 'CAR'
-      - name: group.id
-        in: query
-        description: 'Group identifier from `/sale/compatible-products/groups` resource.
+          required: true
+          schema:
+            type: string
+            example: 'CAR'
+        - name: group.id
+          in: query
+          description: 'Group identifier from `/sale/compatible-products/groups` resource.
                       Parameter is required when parameter `tecdoc.kTypNr` or `tecdoc.nTypNr` or `phrase` is not specified.'
-        required: false
-        schema:
-          type: string
-      - name: tecdoc.kTypNr
-        in: query
-        description: 'Identifier of passenger vehicle (kTypNr) from TecDoc database.
+          required: false
+          schema:
+            type: string
+        - name: tecdoc.kTypNr
+          in: query
+          description: 'Identifier of passenger vehicle (kTypNr) from TecDoc database.
                       When used, `group.id` parameter is ignored.'
-        required: false
-        schema:
-          type: string
-      - name: tecdoc.nTypNr
-        in: query
-        description: 'Identifier of commercial vehicle (nTypNr) from TecDoc database.
+          required: false
+          schema:
+            type: string
+        - name: tecdoc.nTypNr
+          in: query
+          description: 'Identifier of commercial vehicle (nTypNr) from TecDoc database.
                       When used, `group.id` parameter is ignored.'
-        required: false
-        schema:
-          type: string
-      - name: phrase
-        in: query
-        description: 'Query for compatible products.
+          required: false
+          schema:
+            type: string
+        - name: phrase
+          in: query
+          description: 'Query for compatible products.
                       When used, parameters: `group.id`, `limit`, `offset` and header `If-Modified-Since` are ignored.'
-        required: false
-        schema:
-          type: string
-      - name: limit
-        in: query
-        description: 'The limit of returned items. If `phrase` parameter is present,
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: 'The limit of returned items. If `phrase` parameter is present,
                       parameter is ignored and maximum value is set to `200`.'
-        required: false
-        schema:
-          type: integer
-          default: 200
-      - name: offset
-        in: query
-        description: 'The offset of returned items. If `phrase` parameter is present, parameter is ignored.'
-        required: false
-        schema:
-          type: integer
-          default: 0
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 200
+        - name: offset
+          in: query
+          description: 'The offset of returned items. If `phrase` parameter is present, parameter is ignored.'
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
       responses:
         '200':
           description: 'Compatible products returned successfully.'
@@ -4719,7 +5435,7 @@ paths:
                 $ref: '#/components/schemas/ErrorsHolder'
         '401':
           description: 'Unauthorized'
-  '/account/additional-emails/':
+  '/account/additional-emails':
     get:
       tags:
         - Information about user
@@ -4787,7 +5503,7 @@ paths:
       parameters:
         - name: emailId
           in: path
-          description: Id of the additional email
+          description: Id of the additional email.
           required: true
           schema:
             type: string
@@ -4814,12 +5530,12 @@ paths:
       tags:
         - Information about user
       summary: "Delete an additional email address"
-      description: "Use this resource to delete one of additional emails"
+      description: "Use this resource to delete one of additional emails."
       operationId: deleteAdditionalEmailUsingDELETE
       parameters:
         - name: emailId
           in: path
-          description: Id of the additional email to be deleted
+          description: Id of the additional email to be deleted.
           required: true
           schema:
             type: string
@@ -4848,10 +5564,10 @@ paths:
       parameters:
         - name: wallet.type
           in: query
-          description: |
+          description: >-
             Type of the wallet:
-            * AVAILABLE - operations available for payout
-            * WAITING - operations temporarily suspended for payout
+            * AVAILABLE - operations available for payout.
+            * WAITING - operations temporarily suspended for payout.
           required: false
           schema:
             type: string
@@ -4861,10 +5577,10 @@ paths:
               - WAITING
         - name: wallet.paymentOperator
           in: query
-          description: |
+          description: >-
             Payment operator:
-            * PAYU - operations processed by PAYU operator
-            * P24 - operations processed by PRZELEWY24 operator
+            * PAYU - operations processed by PAYU operator.
+            * P24 - operations processed by PRZELEWY24 operator.
           required: false
           schema:
             type: string
@@ -4889,7 +5605,7 @@ paths:
         - name: occurredAt.gte
           in: query
           description: The minimum date and time of operation occurrence in ISO 8601 format.
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:20.818Z"
           required: false
           schema:
             type: string
@@ -4898,17 +5614,17 @@ paths:
           in: query
           description: The maximum date and time of operation occurrence in ISO 8601 format.
           required: false
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:20.818Z"
           schema:
             type: string
             format: date-time
         - name: group
           in: query
-          description: |
+          description: >-
             Group of operation types:
-            * INCOME - CONTRIBUTION, SURCHARGE, CORRECTION, DEDUCTION_INCREASE
-            * OUTCOME - PAYOUT, PAYOUT_CANCEL, DEDUCTION_CHARGE
-            * REFUND - REFUND_CHARGE, REFUND_CANCEL, REFUND_INCREASE, CORRECTION
+            * INCOME - CONTRIBUTION, SURCHARGE, CORRECTION, DEDUCTION_INCREASE.
+            * OUTCOME - PAYOUT, PAYOUT_CANCEL, DEDUCTION_CHARGE.
+            * REFUND - REFUND_CHARGE, REFUND_CANCEL, REFUND_INCREASE, CORRECTION.
           required: false
           schema:
             type: array
@@ -4936,6 +5652,7 @@ paths:
             type: integer
             format: int32
             minimum: 0
+            maximum: 10000
             default: 0
       responses:
         '401':
@@ -4966,12 +5683,14 @@ paths:
       parameters:
         - in: query
           name: paymentId
+          description: Payment identifier.
           schema:
             type: string
             format: uuid
             description: The payment ID compatible with RestAPI.
         - in: query
           name: transactionId
+          description: Transaction identifier.
           schema:
             type: string
             description: The payment ID compatible with WebAPI.
@@ -5014,6 +5733,25 @@ paths:
       summary: "Get list of blacklisted users"
       description: "Use this resource to get a list of blacklisted users created on given account."
       operationId: doGetBlackListUsers
+      parameters:
+        - name: offset
+          in: query
+          description: Index of first returned user from all results.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: >-
+            Maximum number of users in response.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
       responses:
         '200':
           description: List of blacklisted users returned successfully
@@ -5092,16 +5830,17 @@ paths:
   '/bidding/offers/{offerId}/bid':
     put:
       tags:
-      - Auctions and Bidding
+        - Auctions and Bidding
       operationId: placeBid
       summary: 'Place a bid in an auction'
+      description: "Place a bid in an auction."
       parameters:
-      - name: offerId
-        in: path
-        required: true
-        description: The offer ID.
-        schema:
-          type: string
+        - name: offerId
+          in: path
+          required: true
+          description: The offer ID.
+          schema:
+            type: string
       requestBody:
         content:
           'application/vnd.allegro.public.v1+json':
@@ -5110,7 +5849,7 @@ paths:
               title: BidRequest
               description: The bid request.
               required:
-              - maxAmount
+                - maxAmount
               properties:
                 maxAmount:
                   $ref: '#/components/schemas/MaxPrice'
@@ -5140,16 +5879,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorsHolder'
         '422':
-            description: If bidding was not allowed (see message for explanation).
-            content:
-              application/vnd.allegro.public.v1+json:
-                schema:
-                  $ref: '#/components/schemas/ErrorsHolder'
+          description: If bidding was not allowed (see message for explanation).
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/ErrorsHolder'
     get:
       tags:
         - Auctions and Bidding
       operationId: getBid
       summary: "Get current user's bid information"
+      description: "Get current user's bid information."
       parameters:
         - name: offerId
           in: path
@@ -5174,8 +5914,8 @@ paths:
     get:
       tags:
         - User's offer information
-      summary: "[BETA] Get events about the seller's offers"
-      description: |
+      summary: "Get events about the seller's offers"
+      description: >-
         Use this endpoint to get events concerning changes in the authorized seller's offers.
 
         At present we support the following events:
@@ -5185,9 +5925,11 @@ paths:
           - OFFER_STOCK_CHANGED - stock in an offer was changed either via purchase or by seller.
           - OFFER_PRICE_CHANGED - occurs when price in an offer was changed.
           - OFFER_ARCHIVED - offer is no longer available on listing and has been archived.
+          - OFFER_BID_PLACED - bid was placed on the offer
+          - OFFER_BID_CANCELED - bid for offer was canceled
 
         Returned events may occur by actions made via browser or API.
-        The resource allows you to get events concerning active offers and offers scheduled for activation (status ACTIVE and ACTIVATING). Returned events do not concern offers in INACTIVE and ENDED status.
+        The resource allows you to get events concerning active offers and offers scheduled for activation (status ACTIVE and ACTIVATING). Returned events do not concern offers in INACTIVE and ENDED status (the exception is OFFER_ARCHIVED event).
         Please note that one change may result in more than one event.
 
       operationId: getOfferEvents
@@ -5213,21 +5955,25 @@ paths:
           name: type
           required: false
           description: >-
-            The type of events that will be returned in the response. All types of events are returned by default.
+            The types of events that will be returned in the response. All types of events are returned by default.
           schema:
-            type: string
-            enum:
-              - OFFER_ACTIVATED
-              - OFFER_CHANGED
-              - OFFER_ENDED
-              - OFFER_STOCK_CHANGED
-              - OFFER_PRICE_CHANGED
-              - OFFER_ARCHIVED
+            type: array
+            items:
+              type: string
+              enum:
+                - OFFER_ACTIVATED
+                - OFFER_CHANGED
+                - OFFER_ENDED
+                - OFFER_STOCK_CHANGED
+                - OFFER_PRICE_CHANGED
+                - OFFER_ARCHIVED
+                - OFFER_BID_PLACED
+                - OFFER_BID_CANCELED
       responses:
         '200':
           description: The list of offer events returned successfully.
           content:
-            application/vnd.allegro.beta.v1+json:
+            application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/SellerOfferEventsResponse'
               examples:
@@ -5247,8 +5993,24 @@ paths:
                     type: "OFFER_ENDED"
                     offer:
                       id: "2865624934"
-                      endedBy: "USER"
-                      endedAt: "2019-07-30T12:11:00Z"
+                      publication:
+                        endedBy: "USER"
+                offerBidPlaced:
+                  summary: offer bid placed event
+                  value:
+                    id: "MTEzMjQzODU3NA"
+                    occurredAt: "2019-06-26T15:26:43.891Z"
+                    type: "OFFER_BID_PLACED"
+                    offer:
+                      id: "2865624934"
+                offerBidCanceled:
+                  summary: offer bid canceled event
+                  value:
+                    id: "MTEzMjQzODU3NA"
+                    occurredAt: "2019-06-26T15:26:43.891Z"
+                    type: "OFFER_BID_CANCELED"
+                    offer:
+                      id: "2865624934"
         '400':
           description: >-
             Invalid parameters supplied in the request.
@@ -5267,7 +6029,7 @@ paths:
       tags:
         - Badge campaigns
       summary: "[BETA] Get a list of available badge campaigns"
-      description: |
+      description: >-
         Badge campaigns are another way to promote your offers.
         You can apply for a badge, which - depending on a type - will be displayed on your offer page of on the list of offers.
 
@@ -5294,15 +6056,12 @@ paths:
                           refusalReasons: []
                         application:
                           type: 'ALWAYS'
-                          from: null
-                          to: null
                         visibility:
                           type: 'WITHIN'
                           from: '2018-01-01T23:00:00Z'
                           to: '2020-10-04T23:00:00Z'
                         publication:
                           type: 'UNTIL'
-                          from: null
                           to": '2020-10-03T23:00:00Z'
                       - id: 'HIT'
                         name: 'Hit'
@@ -5316,16 +6075,11 @@ paths:
                                   link: null
                         application:
                           type: 'NEVER'
-                          from: null
-                          to: null
                         visibility:
                           type: 'ALWAYS'
-                          from: null
-                          to: null
                         publication:
                           type: 'SINCE'
                           from: '2018-11-04T23:00:00Z'
-                          to": null
         '401':
           description: Unauthorized.
           content:
@@ -5353,7 +6107,7 @@ paths:
       tags:
         - Badge campaigns
       summary: "[BETA] Apply for badge in selected offer"
-      description: |
+      description: >-
         This resource allows you to apply for a badge. Most badges involve additional fee charged.
 
         Your badge application will be verified and you will be notified about the verification status via e-mail.
@@ -5371,7 +6125,7 @@ paths:
           <a href="https://allegro.pl/regulaminy/regulamin-programu-bonusowego-prowizja-nawet-0-5-0KPkAE7wkcv"
             target="_blank">Commission discount terms and conditions</a>.
         <a href="/badge/#2" target="_blank">Read more</a>.
-      operationId: badges_post
+      operationId: postBadges
       responses:
         '202':
           description: Successfully applied for a badge.
@@ -5380,8 +6134,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BadgeApplication'
               examples:
-                response:
-                  summary: 'Badge application'
+                discountResponse:
+                  summary: 'Discount badge application'
                   value:
                     id: '01234567-89ab-0123-456789ab'
                     createdAt: '2011-12-03T10:15:30Z'
@@ -5397,6 +6151,30 @@ paths:
                       bargain:
                         amount: '10.00'
                         currency: 'PLN'
+                    process:
+                      status: 'REQUESTED'
+                      rejectionReasons: []
+                limitResponse:
+                  summary: 'Discount badge application with purchase limit'
+                  value:
+                    id: '01234567-89ab-0123-456789ab'
+                    createdAt: '2011-12-03T10:15:30Z'
+                    updatedAt: '2011-12-03T10:15:30Z'
+                    campaign:
+                      id: 'BARGAIN'
+                    offer:
+                      id: '987654321'
+                    prices:
+                      market:
+                        amount: '11.23'
+                        currency: 'PLN'
+                      bargain:
+                        amount: '10.00'
+                        currency: 'PLN'
+                    purchaseConstraints:
+                      limit:
+                        perUser:
+                          maxItems: '1'
                     process:
                       status: 'REQUESTED'
                       rejectionReasons: []
@@ -5487,6 +6265,25 @@ paths:
                     bargain:
                       amount: '9.99'
                       currency: 'PLN'
+              limit:
+                summary: 'Discount with purchase limit'
+                value:
+                  campaign:
+                    id: 'BARGAIN'
+                  offer:
+                    id: '12345678'
+                  prices:
+                    market:
+                      amount: '19.99'
+                      currency: 'PLN'
+                    bargain:
+                      amount: '9.99'
+                      currency: 'PLN'
+                  purchaseConstraints:
+                    limit:
+                      perUser:
+                        maxItems: '1'
+
     get:
       tags:
         - Badge campaigns
@@ -5494,7 +6291,7 @@ paths:
       description: >-
         Use this resource to get a list of badges in authorized seller's offers.
         <a href="/badge/#5" target="_blank">Read more</a>.
-      operationId: badges_get_all
+      operationId: getBadges
       parameters:
         - name: offer.id
           in: query
@@ -5877,6 +6674,7 @@ paths:
         - Payments
       summary: Initiate a refund of a payment
       description: Use this endpoint to initiate a refund of a payment.
+      operationId: "initiateRefund"
       requestBody:
         content:
           application/vnd.allegro.public.v1+json:
@@ -5917,6 +6715,8 @@ paths:
       tags:
         - Payments
       summary: 'Get a list of refunded payments'
+      description: 'Get a list of refunded payments.'
+      operationId: 'getRefundedPayments'
       parameters:
         - name: limit
           in: query
@@ -5954,7 +6754,7 @@ paths:
         - name: occurredAt.gte
           in: query
           description: Minimum date and time when the refund occurred provided in ISO 8601 format.
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:43.818Z"
           required: false
           schema:
             type: string
@@ -5963,7 +6763,7 @@ paths:
           in: query
           description: Maximum date and time when the refund occurred provided in ISO 8601 format.
           required: false
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:32.818Z"
           schema:
             type: string
             format: date-time
@@ -6021,12 +6821,13 @@ paths:
         - Billing
       summary: 'Get a list of billing entries'
       description: The billing entries are sorted in a descending order (newest first) by date on which they occurred.
+      operationId: "getBillingEntries"
       parameters:
         - name: occurredAt.gte
           in: query
           required: false
           description: Date from which billing entries are filtered. If occurredAt.lte is also set, occurredAt.gte cannot be later.
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:32.818Z"
           schema:
             type: string
             format: date-time
@@ -6034,7 +6835,7 @@ paths:
           in: query
           required: false
           description: Date to which billing entries are filtered. If occurredAt.gte is also set, occurredAt.lte cannot be earlier.
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:32.818Z"
           schema:
             type: string
             format: date-time
@@ -6088,7 +6889,7 @@ paths:
                     type: string
                     format: date-time
                     description: Date of billing entry.
-                    example: '2019-05-08T09:45:818Z'
+                    example: '2019-05-08T09:45:32.818Z'
                   type:
                     type: object
                     properties:
@@ -6170,6 +6971,160 @@ paths:
             application/vnd.allegro.public.v1+json:
               schema:
                 $ref: '#/components/schemas/ErrorsHolder'
+  '/order/refund-claims/{claimId}':
+    get:
+      tags:
+        - Commission refunds
+      summary: 'Get a refund application details'
+      description: Use this resource to get refund application details.
+      operationId: 'getRefundApplication'
+      parameters:
+        - name: claimId
+          in: path
+          description: 'Refund application ID.'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned refund application.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                $ref: '#/components/schemas/RefundClaim'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Refund application does not belong to you.
+        '404':
+          description: Refund application not found.
+        '406':
+          description: Not Acceptable
+    delete:
+      tags:
+        - Commission refunds
+      summary: 'Cancel a refund application'
+      description: Use this resource to cancel a refund application. This cannot be undone.
+      operationId: 'cancelRefundApplication'
+      parameters:
+        - name: claimId
+          in: path
+          description: 'Refund application ID.'
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Refund application was cancelled successfully.
+        '401':
+          description: Unauthorized
+        '403':
+          description: Refund application does not belong to you.
+        '404':
+          description: Refund application not found.
+        '406':
+          description: Not Acceptable
+        '422':
+          description: Refund application has already been processed.
+  '/order/refund-claims':
+    get:
+      tags:
+        - Commission refunds
+      summary: 'Get a list of refund applications'
+      description: Use this resource to get a list of refund applications based on the provided query parameters.
+      operationId: 'getRefundApplications'
+      parameters:
+        - name: lineItem.offer.id
+          in: query
+          required: false
+          description: ID of the offer associated with the refund application.
+          schema:
+            type: string
+        - name: buyer.login
+          in: query
+          required: false
+          description: Login of the buyer that made the purchase associated with the refund application.
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          description: Status of the refund application.
+          schema:
+            type: string
+            enum:
+              - "IN_PROGRESS"
+              - "GRANTED"
+              - "REJECTED"
+              - "REJECTED_AFTER_APPEAL"
+              - "CANCELLED"
+              - "APPEALED"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of returned refund applications in response.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 25
+        - name: offset
+          in: query
+          required: false
+          description: Index of the first returned refund application from all search results.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Successfully returned list of refund applications.
+          content:
+            application/vnd.allegro.public.v1+json:
+              schema:
+                properties:
+                  refundClaims:
+                    type: array
+                    description: Collection of refund applications.
+                    items:
+                      $ref: '#/components/schemas/RefundClaim'
+                  count:
+                    type: integer
+                    format: int32
+                    description: Count of refund applications returned.
+        '401':
+          description: Unauthorized
+        '403':
+          description: Refund application does not belong to you.
+        '406':
+          description: Not Acceptable
+        '422':
+          description: Unprocessable Entity
+    post:
+      tags:
+        - Commission refunds
+      summary: 'Create a refund application'
+      description: Use this resource to create a refund application.
+      operationId: 'createRefundApplication'
+      responses:
+        '201':
+          description: The refund application was created successfully.
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '406':
+          description: Not Acceptable
+        '422':
+          description: Unprocessable Entity
+      requestBody:
+        content:
+          application/vnd.allegro.public.v1+json:
+            schema:
+              $ref: '#/components/schemas/RefundClaimRequest'
+        required: true
 
 components:
   securitySchemes:
@@ -6192,7 +7147,6 @@ components:
       description: For more information, see https://developer.allegro.pl/auth/#clientCredentialsFlow
       flows:
         clientCredentials:
-          authorizationUrl: ""
           tokenUrl: https://allegro.pl/auth/oauth/token
           scopes: {}
   requestBodies:
@@ -6226,9 +7180,46 @@ components:
       required: true
     VariantSetRequest:
       content:
-        application/vnd.allegro.beta.v1+json:
+        application/vnd.allegro.public.v1+json:
           schema:
             $ref: '#/components/schemas/VariantSet'
+          examples:
+            offerParameterOnly:
+              summary: 'offer parameter only'
+              value:
+                name: 't-shirt'
+                offers:
+                  - id: '2'
+                  - id: '3'
+                parameters:
+                  - id: '21'
+            colorPatternParameterOnly:
+              summary: 'color/pattern parameter only'
+              value:
+                name: 't-shirt'
+                offers:
+                  - id: '2'
+                    colorPattern: 'red'
+                  - id: '4'
+                    colorPattern: 'blue'
+                parameters:
+                  - id: 'color/pattern'
+            offerAndColorPatternParameters:
+              summary: 'offer and color/pattern parameters'
+              value:
+                name: 't-shirt'
+                offers:
+                  - id: '2'
+                    colorPattern: 'red'
+                  - id: '3'
+                    colorPattern: 'red'
+                  - id: '4'
+                    colorPattern: 'blue'
+                  - id: '5'
+                    colorPattern: 'blue'
+                parameters:
+                  - id: 'color/pattern'
+                  - id: '21'
       required: true
     MessageRequest:
       content:
@@ -6260,11 +7251,20 @@ components:
             type: string
             format: binary
             description: File in a binary format
-        image/gif:
+    UserRatingAnswerRequest:
+      content:
+        application/vnd.allegro.public.v1+json:
           schema:
-            type: string
-            format: binary
-            description: File in a binary format
+            $ref: '#/components/schemas/UserRatingAnswerRequest'
+      description: 'User rating answer request.'
+      required: true
+    UserRatingRemovalRequest:
+      content:
+        application/vnd.allegro.public.v1+json:
+          schema:
+            $ref: '#/components/schemas/UserRatingRemovalRequest'
+      description: 'User rating removal request.'
+      required: true
   schemas:
     InitializeRefund:
       required:
@@ -6309,6 +7309,112 @@ components:
             value:
               $ref: '#/components/schemas/RefundAdditionalServicesValue'
           description: Payment refund for additional services.
+    RefundClaim:
+      type: object
+      description: Detailed information about the refund application.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the returned refund application.
+          example: '09f0b4cc-7880-11e9-8f9e-2a86e4085a59'
+        status:
+          type: string
+          description: Status of the returned refund application.
+
+            - `IN_PROGRESS` - the application is being processed or awaits user or admin action.
+
+            - `GRANTED` - the application was accepted and a commission refund was granted as requested,
+              or the application was rejected and the seller successfully appealed.
+
+            - `REJECTED` - the application was rejected and no commission was refunded.
+
+            - `REJECTED_AFTER_APPEAL` - the application was initially rejected and the seller unsuccessfully appealed.
+
+            - `CANCELLED` - the application was cancelled by the seller.
+
+            - `APPEALED` - the application was rejected and the seller appealed, but the appeal has not yet finished processing.
+          enum:
+            - "IN_PROGRESS"
+            - "GRANTED"
+            - "REJECTED"
+            - "REJECTED_AFTER_APPEAL"
+            - "CANCELLED"
+            - "APPEALED"
+        quantity:
+          type: integer
+          format: int32
+          description: Quantity of product for which the seller filed the refund application.
+        commission:
+          type: object
+          description: Money value of the returned refund application.
+          properties:
+            amount:
+              type: string
+              description: Monetary amount of the returned refund application.
+              example: '100.00'
+            currency:
+              type: string
+              description: Three-letter currency code (ISO-4217) of the returned refund application.
+              example: 'PLN'
+        buyer:
+          type: object
+          description: Buyer associated with the refund application.
+          properties:
+            id:
+              type: string
+              description: ID of the buyer associated with the refund application.
+              example: '12345678'
+            login:
+              type: string
+              description: Login of the buyer associated with the refund application.
+              example: 'JanKowalski'
+        createdAt:
+          type: string
+          format: date-time
+          description: Date when the refund application was created.
+        lineItem:
+          type: object
+          description: Purchase associated with the refund application.
+          properties:
+            id:
+              type: string
+              description: ID of the purchase associated with the refund application.
+              example: '09f0b4cc-7880-11e9-8f9e-2a86e4085a59'
+            quantity:
+              type: integer
+              format: int32
+              description: Total quantity of product purchased by the buyer.
+                Equal to or greater than quantity for which the seller filed the refund application.
+            boughtAt:
+              type: string
+              format: date-time
+              description: Date when the purchase was made.
+            offer:
+              type: object
+              description: Offer associated with the purchase.
+              properties:
+                id:
+                  type: string
+                  description: ID of the offer associated with the purchase.
+                  example: '12345678'
+                name:
+                  type: string
+                  description: Name of the offer associated with the purchase.
+    RefundClaimRequest:
+      type: object
+      properties:
+        lineItem:
+          type: object
+          description: Purchase for which a refund application will be created.
+          properties:
+            id:
+              type: string
+              description: ID of the purchase for which a refund application will be created.
+        quantity:
+          type: integer
+          format: int32
+          description: Quantity of product for which the refund application will be created. Must be greater than zero.
     RefundDetails:
       type: object
       description: Detailed information about the refund.
@@ -6416,15 +7522,15 @@ components:
               type: string
               description: The currency provided as a 3-letter code in accordance with ISO 4217 standard (https://en.wikipedia.org/wiki/ISO_4217).
     RefundPayment:
-        type: object
-        description: Payment affected by refund operation.
-        title: RefundPayment
-        properties:
-          id:
-            type: string
-            format: uuid
-            description: The payment identifier.
-            example: a6bee8b2-8b4e-11e9-8918-07b31163120a
+      type: object
+      description: Payment affected by refund operation.
+      title: RefundPayment
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The payment identifier.
+          example: a6bee8b2-8b4e-11e9-8918-07b31163120a
     PaymentsSurcharge:
       type: object
       properties:
@@ -6549,6 +7655,20 @@ components:
           $ref: '#/components/schemas/ReturnPolicy'
         warranty:
           $ref: '#/components/schemas/Warranty'
+    AfterSalesServicesAttachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The Id of the attachment.
+          example: 54702c96-4ccd-4c0e-b4c7-382a71e810b5
+        name:
+          type: string
+          description: Attachment file name.
+        url:
+          type: string
+          description: Direct link to the attachment.
     ImpliedWarranty:
       type: object
       description: The implied warranty information.
@@ -6576,8 +7696,264 @@ components:
           format: uuid
           description: The ID of the warranty definition.
           example: 09f0b4cc-7880-11e9-8f9e-2a86e4085a59
+    WarrantyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Warranty name.
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/WarrantyType'
+        individual:
+          $ref: '#/components/schemas/WarrantyPeriod'
+        corporate:
+          $ref: '#/components/schemas/WarrantyPeriod'
+        attachment:
+          $ref: '#/components/schemas/WarrantyAttachment'
+        description:
+          type: string
+          maxLength: 10240
+          description: Warranty description.
+    WarrantyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the warranty definition.
+          example: 09f0b4cc-7880-11e9-8f9e-2a86e4085a59
+        seller:
+          $ref: '#/components/schemas/Seller'
+        name:
+          type: string
+          description: Warranty name.
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/WarrantyType'
+        individual:
+          $ref: '#/components/schemas/WarrantyPeriod'
+        corporate:
+          $ref: '#/components/schemas/WarrantyPeriod'
+        attachment:
+          $ref: '#/components/schemas/AfterSalesServicesAttachment'
+        description:
+          type: string
+          description: Warranty description.
+    WarrantyType:
+      type: string
+      description: Defines who is warrantor.
+      enum:
+        - 'MANUFACTURER'
+        - 'SELLER'
+    WarrantyPeriod:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Period in ISO 8601 format.
+          example: 'P12M'
+        lifetime:
+          type: boolean
+          description: Indices if it is lifetime warranty.
+          example: false
+    WarrantyAttachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The Id of the attachment received in a response from *POST /afters-sales-service-conditions/attachments*
+          example: 54702c96-4ccd-4c0e-b4c7-382a71e810b5
+        name:
+          type: string
+          description: Attachment file name
+          example: 'warranty.pdf'
+    ImpliedWarrantyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Warranty name.
+          maxLength: 200
+        individual:
+          $ref: '#/components/schemas/ImpliedWarrantyPeriod'
+        corporate:
+          $ref: '#/components/schemas/ImpliedWarrantyPeriod'
+        address:
+          $ref: '#/components/schemas/AfterSalesServicesAddress'
+        description:
+          type: string
+          maxLength: 10240
+          description: Implied warranty description.
+    ImpliedWarrantyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the implied warranty definition.
+          example: 09f0b4cc-7880-11e9-8f9e-2a86e4085a59
+        seller:
+          $ref: '#/components/schemas/Seller'
+        name:
+          type: string
+          description: Implied warranty name.
+          maxLength: 200
+        individual:
+          $ref: '#/components/schemas/ImpliedWarrantyPeriod'
+        corporate:
+          $ref: '#/components/schemas/ImpliedWarrantyPeriod'
+        address:
+          $ref: '#/components/schemas/AfterSalesServicesAddress'
+        description:
+          type: string
+          description: Implied warranty description.
+    ImpliedWarrantyPeriod:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Period in ISO 8601 format. Only periods in full years are accepted.
+          example: 'P2Y'
+    AfterSalesServicesAddress:
+      type: object
+      required:
+        - name
+        - street
+        - postCode
+        - city
+        - countryCode
+      properties:
+        name:
+          type: string
+          maxLength: 200
+          description: Company or person name.
+          example: "Allegro.pl sp. z o.o."
+        street:
+          type: string
+          maxLength: 200
+          description: Street name.
+          example: "Grunwaldzka 182"
+        postCode:
+          type: string
+          description: Post code.
+          example: '11-232'
+        city:
+          type: string
+          maxLength: 200
+          description: City name.
+          example: "Poznań"
+        countyCode:
+          type: string
+          description: Country code.
+          example: "PL"
+    ReturnPolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Return policy name.
+          maxLength: 200
+        availability:
+          $ref: '#/components/schemas/ReturnPolicyAvailability'
+        withdrawalPeriod:
+          type: string
+          description: Period in ISO 8601 format. Only periods in full days are accepted.
+          example: 'P14D'
+        returnCost:
+          $ref: '#/components/schemas/ReturnPolicyReturnCost'
+        attachment:
+          $ref: '#/components/schemas/AfterSalesServicesAttachment'
+        address:
+          $ref: '#/components/schemas/AfterSalesServicesAddress'
+        description:
+          type: string
+          maxLength: 10240
+          description: Return policy description.
+    ReturnPolicyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the return policy definition.
+          example: 09f0b4cc-7880-11e9-8f9e-2a86e4085a59
+        seller:
+          $ref: '#/components/schemas/Seller'
+        name:
+          type: string
+          description: Return policy name.
+          maxLength: 200
+        availability:
+          $ref: '#/components/schemas/ReturnPolicyAvailability'
+        withdrawalPeriod:
+          type: string
+          description: Period in ISO 8601 format.
+          example: 'P14D'
+        returnCost:
+          $ref: '#/components/schemas/ReturnPolicyReturnCost'
+        attachment:
+          $ref: '#/components/schemas/AfterSalesServicesAttachment'
+        address:
+          $ref: '#/components/schemas/AfterSalesServicesAddress'
+        description:
+          type: string
+          maxLength: 10240
+          description: Return policy description.
+    ReturnPolicyAvailability:
+      type: object
+      properties:
+        range:
+          type: string
+          description: Indicates if return policy is full or restricted.
+          enum:
+            - 'FULL'
+            - 'RESTRICTED'
+        restrictionCause:
+          type: string
+          description: Type of return policy restrictions. Required if range of policy is set to RESTRICTED.
+          enum:
+            - 'SEALED_MEDIA'
+            - 'SEALED_ITEM_NO_RETURN_DUE_HEALTH_OR_HYGIENE'
+            - 'CUSTOM_ITEM'
+            - 'SHORT_SHELF_LIFE'
+            - 'INSEPARABLY_LINKED'
+            - 'ALCOHOL'
+            - 'PRESS'
+            - 'FULLY_IMPLEMENTED_SERVICE'
+            - 'MEDICINAL_PRODUCT'
+            - 'BOOKED_SERVICE'
+            - 'NOT_RECORDED_DIGITAL_CONTENT'
+    ReturnPolicyReturnCost:
+      type: object
+      properties:
+        coveredBy:
+          type: string
+          description: Indicates who covers the return delivery costs.
+          enum:
+            - 'SELLER'
+            - 'BUYER'
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of an attachment received in a response from *POST /sale/offer-attachments*
+          example: 1928302_MANUAL_45d7a0f543e1b0d05e12a1aef5642efe63389a1d419fe9286d0f158044391fdce
+    UserRatingAnswerRequest:
+      type: object
+      description: "Answer for user's rating."
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: 'Answer message.'
+          maxLength: 500
     Answer:
       type: object
+      description: 'Seller''s answer, if null seller did not publish answer'
       required:
         - createdAt
         - message
@@ -6832,40 +8208,37 @@ components:
                   maxRows:
                     type: integer
                     description: 'Maximum number of items allowed on compatibility list.'
-                    example: '2000'
+                    example: 2000
                   maxCharactersPerLine:
                     type: integer
                     description: 'Maximum length of single item on the list.'
-                    example: '160'
+                    example: 160
           example:
-          - categoryId: '620'
-            name: 'Części samochodowe'
-            itemsType: 'CAR'
-            inputType: 'ID'
-            validationRules:
-              maxRows: 2000
-              maxCharactersPerLine: null
-          - categoryId: '257358'
-            name: 'Pióra wycieraczek'
-            itemsType: 'CAR'
-            inputType: 'ID'
-            validationRules:
-              maxRows: 2000
-              maxCharactersPerLine: null
-          - categoryId: '158'
-            name: 'Części motocyklowe'
-            itemsType: 'MOTORCYCLE'
-            inputType: 'ID'
-            validationRules:
-              maxRows: 2000
-              maxCharactersPerLine: null
-          - categoryId: '9108'
-            name: 'Tusze'
-            itemsType: 'PRINTER'
-            inputType: 'TEXT'
-            validationRules:
-              maxRows: 200
-              maxCharactersPerLine: 100
+            - categoryId: '620'
+              name: 'Części samochodowe'
+              itemsType: 'CAR'
+              inputType: 'ID'
+              validationRules:
+                maxRows: 2000
+            - categoryId: '257358'
+              name: 'Pióra wycieraczek'
+              itemsType: 'CAR'
+              inputType: 'ID'
+              validationRules:
+                maxRows: 2000
+            - categoryId: '158'
+              name: 'Części motocyklowe'
+              itemsType: 'MOTORCYCLE'
+              inputType: 'ID'
+              validationRules:
+                maxRows: 2000
+            - categoryId: '9108'
+              name: 'Tusze'
+              itemsType: 'PRINTER'
+              inputType: 'TEXT'
+              validationRules:
+                maxRows: 200
+                maxCharactersPerLine: 100
     CompatibleProductsGroupsDto:
       type: object
       properties:
@@ -7068,7 +8441,6 @@ components:
           type: string
           description: General fail reason. You should check the errors structure to get more detailed information of the encountered errors.
         offer:
-          description: Offer identifier.
           $ref: '#/components/schemas/OfferId'
         scheduledAt:
           type: string
@@ -7107,37 +8479,37 @@ components:
           PRODUCT_BASED: '#/components/schemas/CompatibilityListProductBased'
     CompatibilityListManual:
       allOf:
-      - $ref: '#/components/schemas/CompatibilityList'
-      - type: object
-        required:
-        - items
-        properties:
-          items:
-            type: array
+        - $ref: '#/components/schemas/CompatibilityList'
+        - type: object
+          required:
+            - items
+          properties:
             items:
-              $ref: '#/components/schemas/CompatibilityListItem'
-            description: 'List of the compatible items.
+              type: array
+              items:
+                $ref: '#/components/schemas/CompatibilityListItem'
+              description: 'List of the compatible items.
                          Maximum number of elements on the list depends on type of included compatible items.
                          Configuration and details concerning the compatible items in selected category are provided in the response for GET
                          <a href="/documentation/#tag/Compatibility-List/paths/~1sale~1compatibility-list~1supported-categories/get">
                          supported-categories</a> resource in `validationRules` object.'
-        description: 'List of items compatible with offer.'
+          description: 'List of items compatible with offer.'
     CompatibilityListProductBased:
       allOf:
-      - $ref: '#/components/schemas/CompatibilityList'
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            type: string
-            description: 'Id of product-based compatibility list.'
-            example: '460b2511-b786-47b9-9d7e-1f868728cfd6-f103931434fbf4aa06764f3df74d371df23aa138a9cd46dbe570f51af79db1c4-2'
-          items:
-            type: array
+        - $ref: '#/components/schemas/CompatibilityList'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              description: 'Id of product-based compatibility list.'
+              example: '460b2511-b786-47b9-9d7e-1f868728cfd6-f103931434fbf4aa06764f3df74d371df23aa138a9cd46dbe570f51af79db1c4-2'
             items:
-              $ref: '#/components/schemas/CompatibilityListItemProductBased'
-            description: 'Text representation of the compatibility list items. Provided for informational purposes only -
+              type: array
+              items:
+                $ref: '#/components/schemas/CompatibilityListItemProductBased'
+              description: 'Text representation of the compatibility list items. Provided for informational purposes only -
                             ignored when creating (Post) or updating (Put) compatibility list in the offer.'
     CompatibilityListItem:
       type: object
@@ -7292,7 +8664,7 @@ components:
       properties:
         additionalInfo:
           type: string
-          maxLength: 500
+          maxLength: 650
         handlingTime:
           type: string
           example: PDT12H30M5S
@@ -7455,7 +8827,6 @@ components:
           description: 'Commission fee name.'
           example: 'Prowizja od sprzedaży'
         fee:
-          type: object
           $ref: '#/components/schemas/Price'
     QuoteResponse:
       type: object
@@ -7465,14 +8836,12 @@ components:
           description: 'Quote fee name.'
           example: 'Opłata za wystawienie.'
         fee:
-          type: object
           $ref: '#/components/schemas/Price'
         cycleDuration:
           type: string
           description: 'Duration in ISO 8601 format.'
           example: 'PT240H'
         classifiedsPackage:
-          type: object
           $ref: '#/components/schemas/ClassifiedPackage'
     GeneralReport:
       type: object
@@ -7481,7 +8850,6 @@ components:
           type: string
           description: Command ID
         taskCount:
-          description: Tasks information
           $ref: '#/components/schemas/TaskCount'
       description: Command execution summary
     Header:
@@ -7545,21 +8913,16 @@ components:
       type: object
       properties:
         additionalServicesGroup:
-          description: AdditionalServicesGroup modification
           $ref: '#/components/schemas/AdditionalServicesGroup'
         delivery:
           $ref: '#/components/schemas/ModificationDelivery'
         payments:
-          description: Payments modification
           $ref: '#/components/schemas/ModificationPayments'
         promotion:
-          description: Promotion modification
           $ref: '#/components/schemas/ModificationPromotion'
         sizeTable:
-          description: SizeTable modification
           $ref: '#/components/schemas/ModificationSizeTable'
         publication:
-          description: Publication modification
           $ref: '#/components/schemas/ModificationPublication'
       description: Contains fields to change
     ModificationDelivery:
@@ -7705,6 +9068,10 @@ components:
       properties:
         url:
           type: string
+          description: >-
+            URL of the image.
+            It has to contain domain name, not an IP address.
+            Currently we support http and https protocols. When using https the certificate chain needs to be valid.
     OfferImageUploadResponse:
       type: object
       properties:
@@ -7726,6 +9093,11 @@ components:
           $ref: '#/components/schemas/JustId'
         afterSalesServices:
           $ref: '#/components/schemas/AfterSalesServices'
+        attachments:
+          type: array
+          description: List of offer attachments. You can attach up to 7 files to the offer – one per each attachment type as described in <a href="/documentation/#operation/createOfferAttachmentUsingPOST" target="_blank">uploading offer attachments flow</a>.
+          items:
+            $ref: '#/components/schemas/Attachment'
         category:
           $ref: '#/components/schemas/Category'
         compatibilityList:
@@ -7737,7 +9109,7 @@ components:
           format: date-time
           description: >-
             Creation date: Format (ISO 8601) - yyyy-MM-dd'T'HH:mm:ss.SSSZ.
-            Cannot be modified
+            Cannot be modified.
         delivery:
           $ref: '#/components/schemas/Delivery'
         description:
@@ -7787,12 +9159,11 @@ components:
             Cannot be modified
         validation:
           $ref: '#/components/schemas/Validation'
-      description: Single offer data
+      description: Single offer data.
     OfferChangeCommand:
       type: object
       properties:
         modification:
-          description: Fields to change
           $ref: '#/components/schemas/Modification'
         offerCriteria:
           type: array
@@ -7983,7 +9354,7 @@ components:
           type: string
           format: date-time
         offer:
-          $ref: '#/components/schemas/Offer'
+          $ref: '#/components/schemas/OfferId'
         type:
           type: string
       title: OfferQuoteDto
@@ -8047,7 +9418,7 @@ components:
           type: array
           items:
             type: string
-      description: Offer's parameter
+      description: Offer's parameter.
     CategoryParameter:
       type: object
       required:
@@ -8072,11 +9443,6 @@ components:
           type: string
           description: >-
             The type of the parameter. Other fields in this structure may appear based on the type of the parameter.
-          enum:
-            - integer
-            - float
-            - string
-            - dictionary
         required:
           type: boolean
           description: >-
@@ -8112,11 +9478,6 @@ components:
           type: string
           description: >-
             The type of the product parameter. Other fields in this structure may appear based on the type of the parameter.
-          enum:
-            - integer
-            - float
-            - string
-            - dictionary
         required:
           type: boolean
           description: >-
@@ -8243,6 +9604,18 @@ components:
         variantsEqual:
           type: boolean
           description: All offer variants must have the same values in parameters with this option enabled.
+        ambiguousValueId:
+          type: string
+          description: >-
+            Indicates what value in the dictionary is defined as an ambiguous one.
+            Only parameters with dictionaries might have this option defined.
+          example: "128788_36"
+        dependsOnParameterId:
+          type: string
+          description: >-
+            Values in the dictionary depend on the parameter referenced by this field.
+            Only parameters with dictionaries can have this option defined.
+          example: "211062"
       description: A list of the different options which can be used with this parameter.
     DictionaryCategoryParameter:
       allOf:
@@ -8274,6 +9647,14 @@ components:
                     type: string
                     description: The label of the dictionary value in Polish.
                     example: "Nowy"
+                  dependsOnValueIds:
+                    type: array
+                    items:
+                      type: string
+                      description: >-
+                        The ID of the dictionary value from parameter that this parameter depends on.
+                        This value might be set in the offer, but only when the referenced value is set as well.
+                      example: "211062_246554"
     IntegerCategoryParameter:
       allOf:
         - $ref: '#/components/schemas/CategoryParameter'
@@ -8591,10 +9972,10 @@ components:
         endedBy:
           type: string
           enum:
-          - USER
-          - ADMIN
-          - EXPIRATION
-          - ERROR
+            - USER
+            - ADMIN
+            - EXPIRATION
+            - ERROR
           description: >-
             Indicates the reason for ending the offer:
              - `USER` - offer ended by the seller.
@@ -8620,7 +10001,6 @@ components:
           items:
             $ref: '#/components/schemas/OfferCriterium'
         publication:
-          description: Fields to change
           $ref: '#/components/schemas/Publication_modification'
       description: Publication modification command payload
     Rates:
@@ -8686,10 +10066,10 @@ components:
           example: '2017-05-17T08:36:57.292+02:00'
           description: Date until a removal request can be submitted in ISO 8601 format
         request:
-          description: 'Submitted removal request, null if removal was not requested'
           $ref: '#/components/schemas/RemovalRequest'
     RemovalRequest:
       type: object
+      description: 'Submitted removal request, null if removal was not requested'
       required:
         - createdAt
         - message
@@ -8702,6 +10082,20 @@ components:
         message:
           type: string
           description: Message containing explanation for removing rating
+    UserRatingRemovalRequest:
+      type: object
+      required:
+        - request
+      properties:
+        request:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              description: 'Message containing explanation for removing rating.'
+              maxLength: 500
     ReturnPolicyBasic:
       type: object
       properties:
@@ -9003,10 +10397,8 @@ components:
         - recommended
       properties:
         answer:
-          description: 'Seller''s answer, if null seller did not publish answer'
           $ref: '#/components/schemas/Answer'
         buyer:
-          description: Buyer who created rating
           $ref: '#/components/schemas/User'
         comment:
           type: string
@@ -9026,17 +10418,14 @@ components:
           type: string
           description: Rating id
         order:
-          description: Rated order
           $ref: '#/components/schemas/Order'
         rates:
-          description: Given rates
           $ref: '#/components/schemas/Rates'
         recommended:
           type: boolean
           example: false
           description: Whether buyer recommends the order
         removal:
-          description: Data regarding removal of rating
           $ref: '#/components/schemas/Removal'
     UserRatingListResponse:
       type: object
@@ -9177,7 +10566,6 @@ components:
         - unitPrice
       properties:
         category:
-          description: Leaf category id
           $ref: '#/components/schemas/Category'
         condition:
           type: string
@@ -9327,20 +10715,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VariantSet_Parameter'
-      example:
-        name: 't-shirt'
-        offers:
-          - id: '2'
-            colorPattern: red
-          - id: '3'
-            colorPattern: red
-          - id: '4'
-            colorPattern: blue
-          - id: '5'
-            colorPattern: blue
-        parameters:
-          - 'color/pattern'
-          - '21'
+    VariantSetResponse:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+        - $ref: '#/components/schemas/VariantSet'
     VariantSet_Offer:
       type: object
       required:
@@ -9959,7 +11340,7 @@ components:
         order:
           $ref: '#/components/schemas/OrderEventData'
         type:
-          $ref: '#/components/schemas/CheckoutFormStatus'
+          $ref: '#/components/schemas/OrderEventType'
         occurredAt:
           type: string
           format: date-time
@@ -10067,7 +11448,6 @@ components:
       properties:
         latestEvent:
           $ref: '#/components/schemas/LatestOrderEvent'
-          description: Latest event
       description: Event statistics, currently contains only basic information about the latest event.
     LatestOrderEvent:
       type: object
@@ -10104,6 +11484,19 @@ components:
         * `BOUGHT` - purchase without checkout form filled in
         * `FILLED_IN` - checkout form filled in but payment is not completed yet so data could still change
         * `READY_FOR_PROCESSING` - payment completed. Purchase is ready for processing.
+    OrderEventType:
+      enum:
+        - BOUGHT
+        - FILLED_IN
+        - READY_FOR_PROCESSING
+        - FULFILLMENT_STATUS_CHANGED
+      example: "READY_FOR_PROCESSING"
+      description: >
+        Type of order event.
+        * `BOUGHT` - purchase without checkout form filled in
+        * `FILLED_IN` - checkout form filled in but payment is not completed yet so data could still change
+        * `READY_FOR_PROCESSING` - payment completed. Purchase is ready for processing.
+        * `FULFILLMENT_STATUS_CHANGED`: fulfillment status changed.
     CheckoutForms:
       type: object
       required:
@@ -10152,6 +11545,8 @@ components:
           $ref: '#/components/schemas/CheckoutFormPaymentReference'
         status:
           $ref: '#/components/schemas/CheckoutFormStatus'
+        fulfillment:
+          $ref: '#/components/schemas/CheckoutFormFulfillment'
         delivery:
           $ref: '#/components/schemas/CheckoutFormDeliveryReference'
         invoice:
@@ -10170,6 +11565,10 @@ components:
             $ref: '#/components/schemas/CheckoutFormDiscount'
         summary:
           $ref: '#/components/schemas/CheckoutFormSummary'
+        updatedAt:
+          type: string
+          description: 'Provided in [ISO 8601 format](link: https://en.wikipedia.org/wiki/ISO_8601).'
+          example: '2011-12-03T10:15:30.133Z'
     CheckoutFormBuyerReference:
       type: object
       required:
@@ -10253,7 +11652,7 @@ components:
         finishedAt:
           type: string
           format: date-time
-          example: '2018-10-12T10:12:32.321'
+          example: '2018-10-12T10:12:32.321Z'
           description: 'Date when the event occurred'
         paidAmount:
           $ref: '#/components/schemas/Price'
@@ -10264,12 +11663,44 @@ components:
         - CASH_ON_DELIVERY
         - WIRE_TRANSFER
         - ONLINE
+        - SPLIT_PAYMENT
     CheckoutFormPaymentProvider:
       description: Payment provider
       type: string
       enum:
         - P24
         - PAYU
+        - OFFLINE
+    CheckoutFormFulfillment:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/CheckoutFormFulfillmentStatus'
+        shipmentSummary:
+          $ref: '#/components/schemas/CheckoutFormFulfillmentShipmentSummary'
+    CheckoutFormFulfillmentStatus:
+      enum:
+        - NEW
+        - PROCESSING
+        - READY_FOR_SHIPMENT
+        - SENT
+        - CANCELLED
+      example: "SENT"
+      description: >
+        Order seller status.
+    CheckoutFormFulfillmentShipmentSummary:
+      type: object
+      properties:
+        lineItemsSent:
+          $ref: '#/components/schemas/CheckoutFormFulfillmentShipmentSummaryLineItemsSent'
+    CheckoutFormFulfillmentShipmentSummaryLineItemsSent:
+      enum:
+        - NONE
+        - SOME
+        - ALL
+      example: "SOME"
+      description: >
+        Indicates how many line items have tracking number specified.
     CheckoutFormDeliveryReference:
       type: object
       properties:
@@ -10495,7 +11926,7 @@ components:
           type: string
           format: date-time
           description: ISO date when offer was bought
-          example: "2018-01-01T10:23:43.123"
+          example: "2018-01-01T10:23:43.123Z"
       description: Order item
     CheckoutFormAdditionalService:
       type: object
@@ -10510,7 +11941,6 @@ components:
           example: "Wniesienie"
         price:
           $ref: '#/components/schemas/Price'
-          description: Additional service price
         quantity:
           type: integer
           format: int32
@@ -10540,8 +11970,10 @@ components:
         - totalToPay
       properties:
         totalToPay:
-          description: Total to pay including additional services and delivery
-          $ref: '#/components/schemas/Price'
+          allOf:
+            - $ref: '#/components/schemas/Price'
+            - type: object
+              description: Total to pay including additional services and delivery
     DisputeListResponse:
       type: object
       properties:
@@ -10557,7 +11989,6 @@ components:
           description: Identifier of the dispute
         subject:
           $ref: '#/components/schemas/Subject'
-          description: Subject of the dispute
         status:
           type: string
           enum:
@@ -10586,6 +12017,7 @@ components:
         - messagesCount
     Subject:
       type: object
+      description: Subject of the dispute
       properties:
         name:
           type: string
@@ -10614,10 +12046,8 @@ components:
         text:
           type: string
         attachment:
-          type: object
           $ref: '#/components/schemas/DisputeAttachment'
         author:
-          type: object
           $ref: '#/components/schemas/DisputeAuthor'
         createdAt:
           type: string
@@ -10636,10 +12066,8 @@ components:
         text:
           type: string
         attachment:
-          type: object
           $ref: '#/components/schemas/DisputeAttachment'
         author:
-          type: object
           $ref: '#/components/schemas/DisputeMessageAuthor'
         createdAt:
           type: string
@@ -10732,7 +12160,6 @@ components:
           type: string
           maxLength: 20000
         attachment:
-          type: object
           $ref: '#/components/schemas/DisputeAttachmentId'
         type:
           type: string
@@ -10803,7 +12230,7 @@ components:
               dealId:
                 type: string
                 description: WebAPI deal id
-                example: 12345678
+                example: "12345678"
               lineItemId:
                 type: string
                 format: uuid
@@ -10914,29 +12341,8 @@ components:
       properties:
         carrierId:
           type: string
-          enum:
-            - UPS
-            - INPOST
-            - DHL
-            - GLS
-            - RUCH
-            - POCZTA_POLSKA
-            - DPD
-            - FEDEX
-            - TNT_EXPRESS
-            - DB_SCHENKER
-            - RABEN
-            - GEIS
-            - DTS
-            - PEKAES
-            - PATRON
-            - X_PRESS_COURIERS
-            - RHENUS_LOGISTICS
-            - OTHER
           description: >-
-            Carrier identifier taken from the dictionary below. It’s highly recommended to use an identifier different
-            from OTHER, because its parcel status may be updated automatically. Carrier identifier OTHER is reserved for
-            cases when seller uses a custom carrier or not yet integrated with Allegro.
+            Supported carriers are available via <a href="#operation/getOrdersCarriersUsingGET" target="_blank">shipping carriers resource</a>.
         waybill:
           type: string
           description: >-
@@ -10960,6 +12366,20 @@ components:
                 type: string
                 description: >-
                   Identifier of an order line item.
+    OrdersShippingCarrier:
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            Identifier of a carrier - unique to every carrier.
+
+
+            It’s highly recommended to use an identifier different from `OTHER`, because its parcel status may be updated automatically.
+            Carrier identifier `OTHER` is reserved for cases when seller uses a custom carrier or not yet integrated with Allegro.
+        name:
+          type: string
+          description: Name of a carrier.
     CheckoutFormAddWaybillCreated:
       type: object
       properties:
@@ -10974,29 +12394,8 @@ components:
             character (equal to [a-zA-Z0-9_]) and special characters: parentheses and hyphen-minus.
         carrierId:
           type: string
-          enum:
-            - UPS
-            - INPOST
-            - DHL
-            - GLS
-            - RUCH
-            - POCZTA_POLSKA
-            - FEDEX
-            - DPD
-            - TNT_EXPRESS
-            - DB_SCHENKER
-            - RABEN
-            - GEIS
-            - DTS
-            - PEKAES
-            - PATRON
-            - X_PRESS_COURIERS
-            - RHENUS_LOGISTICS
-            - OTHER
           description: >-
-            Carrier identifier taken from the dictionary below. It’s highly recommended to use an identifier different
-            from OTHER, because its parcel status may be updated automatically. Carrier identifier OTHER is reserved for
-            cases when seller uses a custom carrier or not yet integrated with Allegro.
+            Supported carriers are available via <a href="#operation/getOrdersCarriersUsingGET" target="_blank">shipping carriers resource</a>.
         carrierName:
           type: string
           description: >-
@@ -11014,6 +12413,15 @@ components:
           type:
             string
           description: Date and time of the parcel tracking number registration in UTC (ISO8601 format).
+    OrdersShippingCarriersResponse:
+      type: object
+      properties:
+        carriers:
+          type: array
+          description: >-
+            List of shipping carriers.
+          items:
+            $ref: '#/components/schemas/OrdersShippingCarrier'
     CheckoutFormOrderWaybillResponse:
       type: object
       properties:
@@ -11155,8 +12563,8 @@ components:
     SaleProductCompatibilityList:
       type: object
       required:
-      - id
-      - type
+        - id
+        - type
       description: "Compatibility list assigned to this product, based on information from TecDoc database."
       properties:
         id:
@@ -11227,6 +12635,8 @@ components:
           type: array
           items:
             type: string
+        unit:
+          type: string
         options:
           type: array
           items:
@@ -11278,7 +12688,7 @@ components:
     ClassifiedPackages:
       type: object
       required:
-      - basePackage
+        - basePackage
       properties:
         basePackage:
           $ref: '#/components/schemas/ClassifiedPackage'
@@ -11289,8 +12699,8 @@ components:
     ClassifiedResponse:
       type: object
       required:
-      - basePackage
-      - extraPackages
+        - basePackage
+        - extraPackages
       properties:
         basePackage:
           $ref: '#/components/schemas/ClassifiedPackage'
@@ -11314,9 +12724,9 @@ components:
     ClassifiedPackageConfig:
       type: object
       required:
-      - id
-      - name
-      - type
+        - id
+        - name
+        - type
       properties:
         extensions:
           type: array
@@ -11340,13 +12750,13 @@ components:
         type:
           type: string
           enum:
-          - BASE
-          - EXTRA
+            - BASE
+            - EXTRA
       title: ClassifiedPackageConfig
     ClassifiedPackageConfigs:
       type: object
       required:
-      - packages
+        - packages
       properties:
         packages:
           type: array
@@ -11356,8 +12766,8 @@ components:
     ClassifiedPromotion:
       type: object
       required:
-      - duration
-      - name
+        - duration
+        - name
       properties:
         duration:
           type: string
@@ -11371,7 +12781,7 @@ components:
     ClassifiedPublication:
       type: object
       required:
-      - duration
+        - duration
       properties:
         duration:
           type: string
@@ -11389,9 +12799,6 @@ components:
           type: array
           description: Collection of payment operations.
           items:
-            type: object
-            required:
-              - type
             $ref: '#/components/schemas/BaseOperation'
         count:
           type: integer
@@ -11419,9 +12826,9 @@ components:
           type: string
           description: The group to which the given operation type belongs.
           enum:
-            - INCOME
-            - OUTCOME
-            - REFUND
+            - "INCOME"
+            - "OUTCOME"
+            - "REFUND"
         wallet:
           $ref: '#/components/schemas/Wallet'
         value:
@@ -11430,7 +12837,7 @@ components:
           type: string
           format: date-time
           description: Date and time of the operation in ISO 8601 format.
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:00.818Z"
       discriminator:
         propertyName: type
         mapping:
@@ -11760,11 +13167,11 @@ components:
           type: string
           format: uuid
           description: The payment ID compatible with RestAPI.
-          example: 2e2fe432-2115-32f9-82ae-e350e7aa9ed0
+          example: "2e2fe432-2115-32f9-82ae-e350e7aa9ed0"
         transactionId:
           type: string
           description: The transaction ID compatible with WebAPI.
-          example: 1016873349
+          example: "1016873349"
     TecdocSpecification:
       type: object
       required:
@@ -11811,7 +13218,7 @@ components:
           type: string
           format: date-time
           description: Date and time of the creation in ISO 8601 format.
-          example: 2019-05-08T09:45:818Z
+          example: "2019-05-08T09:45:43.818Z"
     BlackListPagedResponse:
       type: object
       properties:
@@ -11837,14 +13244,14 @@ components:
     BlacklistUser:
       type: object
       properties:
-          id:
-            type: number
-            description: Id of excluded user.
-            example: 123456
-          login:
-            type: string
-            description: Login of excluded user.
-            example: bad_buyer
+        id:
+          type: number
+          description: Id of excluded user.
+          example: 123456
+        login:
+          type: string
+          description: Login of excluded user.
+          example: bad_buyer
     MeResponse:
       type: object
       properties:
@@ -11865,7 +13272,7 @@ components:
           description: User's last name.
           example: "Iksiński"
         company:
-            $ref: '#/components/schemas/Company'
+          $ref: '#/components/schemas/Company'
     Company:
       type: object
       properties:
@@ -11944,6 +13351,8 @@ components:
           OFFER_STOCK_CHANGED: '#/components/schemas/OfferStockChangedEvent'
           OFFER_PRICE_CHANGED: '#/components/schemas/OfferPriceChangedEvent'
           OFFER_ARCHIVED: '#/components/schemas/OfferArchivedEvent'
+          OFFER_BID_PLACED: '#/components/schemas/OfferBidPlacedEvent'
+          OFFER_BID_CANCELED: '#/components/schemas/OfferBidCanceledEvent'
     OfferActivatedEvent:
       allOf:
         - $ref: '#/components/schemas/SellerOfferBaseEvent'
@@ -12016,6 +13425,30 @@ components:
               default: "OFFER_ARCHIVED"
             offer:
               $ref: '#/components/schemas/OfferEventBaseOffer'
+    OfferBidPlacedEvent:
+      allOf:
+        - $ref: '#/components/schemas/SellerOfferBaseEvent'
+        - type: object
+          required:
+            - offer
+          properties:
+            type:
+              type: string
+              default: "OFFER_BID_PLACED"
+            offer:
+              $ref: '#/components/schemas/OfferEventBaseOffer'
+    OfferBidCanceledEvent:
+      allOf:
+        - $ref: '#/components/schemas/SellerOfferBaseEvent'
+        - type: object
+          required:
+            - offer
+          properties:
+            type:
+              type: string
+              default: "OFFER_BID_CANCELED"
+            offer:
+              $ref: '#/components/schemas/OfferEventBaseOffer'
     OfferEventBaseOffer:
       type: object
       description: The data of the offer, for which the event occurred.
@@ -12042,11 +13475,11 @@ components:
                 endedBy:
                   type: string
                   enum:
-                  - USER
-                  - ADMIN
-                  - EXPIRATION
-                  - ERROR
-                  - UNKNOWN
+                    - USER
+                    - ADMIN
+                    - EXPIRATION
+                    - ERROR
+                    - UNKNOWN
                   description: >-
                     Indicates the reason for ending the offer:
                      - `USER` - offer ended by the seller.
@@ -12056,16 +13489,10 @@ components:
                      - `ERROR` - offer ended due to internal problem with offer publication. The publication command responded with
                        success status, but further processing failed.
                      - `UNKNOWN` - in rare cases the reason might be unknown.
-                endedAt:
-                  type: string
-                  format: date-time
-                  description: >-
-                    Offer publication ending date and time in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format in UTC - `yyyy-MM-ddTHH:mm:ssZ`.
-                  example: "2019-07-30T12:10:11Z"
     GetBadgeCampaignsList:
       type: object
       required:
-      - badgeCampaigns
+        - badgeCampaigns
       properties:
         badgeCampaigns:
           type: array
@@ -12100,7 +13527,6 @@ components:
             - SOURCING
         eligibility:
           $ref: '#/components/schemas/UserCampaignEligibility'
-          title: 'UserEligibility'
         application:
           $ref: '#/components/schemas/ApplicationTimePolicy'
         visibility:
@@ -12174,8 +13600,7 @@ components:
           description: 'Provided in [ISO 8601 format](link: https://en.wikipedia.org/wiki/ISO_8601).'
           example: '2011-12-03T10:15:30Z'
       example:
-        type: UNTIL
-        from: null
+        type: "UNTIL"
         to: '2012-12-03T10:15:30Z'
     VisibilityTimePolicy:
       type: object
@@ -12204,8 +13629,7 @@ components:
           description: 'Provided in [ISO 8601 format](link: https://en.wikipedia.org/wiki/ISO_8601).'
           example: '2011-12-03T10:15:30Z'
       example:
-        type: UNTIL
-        from: null
+        type: "UNTIL"
         to: '2012-12-03T10:15:30Z'
     PublicationTimePolicy:
       type: object
@@ -12230,8 +13654,7 @@ components:
           description: 'Provided in [ISO 8601 format](link: https://en.wikipedia.org/wiki/ISO_8601).'
           example: '2011-12-03T10:15:30Z'
       example:
-        type: UNTIL
-        from: null
+        type: "UNTIL"
         to: '2012-12-03T10:15:30Z'
     BadgePublicationTimePolicy:
       type: object
@@ -12242,23 +13665,22 @@ components:
         type:
           type: string
           enum:
-            - ALWAYS
-            - SINCE
-            - WITHIN
-            - UNTIL
-            - NEVER
+            - "ALWAYS"
+            - "SINCE"
+            - "WITHIN"
+            - "UNTIL"
+            - "NEVER"
         from:
           type: string
           description: 'Provided in [ISO 8601 format](link: https://en.wikipedia.org/wiki/ISO_8601).'
-          example: '2011-12-03T10:15:30Z'
+          example: "2011-12-03T10:15:30.000Z"
         to:
           type: string
           description: 'Provided in [ISO 8601 format](link: https://en.wikipedia.org/wiki/ISO_8601).'
-          example: '2011-12-03T10:15:30Z'
+          example: "2011-12-03T10:15:30.000Z"
       example:
-        type: UNTIL
-        from: null
-        to: '2012-12-03T10:15:30Z'
+        type: "UNTIL"
+        to: "2012-12-03T10:15:30.000Z"
     BadgeApplicationRequest:
       type: object
       required:
@@ -12271,6 +13693,8 @@ components:
           $ref: '#/components/schemas/BadgeApplicationOffer'
         prices:
           $ref: '#/components/schemas/BadgeApplicationPrices'
+        purchaseConstraints:
+          $ref: '#/components/schemas/BadgeApplicationPurchaseConstraints'
     BadgeApplicationCampaign:
       type: object
       required:
@@ -12340,6 +13764,28 @@ components:
           example: 'PLN'
       title: BadgeApplicationBargainPrice
       description: 'Bargain price. Required by DISCOUNT and SOURCING campaign.'
+    BadgeApplicationPurchaseConstraints:
+      type: object
+      properties:
+        limit:
+          $ref: '#/components/schemas/BadgeApplicationPurchaseConstraintsLimit'
+      description: 'Constraints of purchase of this offer while it participates in the campaign. Optional for all campaigns types.'
+    BadgeApplicationPurchaseConstraintsLimit:
+      type: object
+      properties:
+        perUser:
+          $ref: '#/components/schemas/BadgeApplicationPurchaseConstraintsLimitPerUser'
+      description: 'Limits of purchase of this offer while it participates in the campaign.'
+    BadgeApplicationPurchaseConstraintsLimitPerUser:
+      type: object
+      properties:
+        maxItems:
+          type: integer
+          format: int32
+          minimum: 1
+          description: 'Maximum number of items that one user can buy of this offer, while it participates in the campaign.'
+          example: 1
+      description: 'Limits of purchase of this offer per user while it participates in the campaign.'
     BadgeApplications:
       type: object
       required:
@@ -12379,6 +13825,8 @@ components:
           $ref: '#/components/schemas/BadgeApplicationPrices'
         process:
           $ref: '#/components/schemas/BadgeApplicationProcess'
+        purchaseConstraints:
+          $ref: '#/components/schemas/BadgeApplicationPurchaseConstraints'
     BadgeApplicationProcess:
       type: object
       required:
@@ -12474,3 +13922,48 @@ components:
           items:
             $ref: '#/components/schemas/BadgeApplicationRejectionReason'
       description: 'Information about badge processing.'
+    OfferRating:
+      type: object
+      properties:
+        averageScore:
+          type: string
+          description: 'Average score of offer rating.'
+          example: '4.0'
+        scoreDistribution:
+          type: array
+          description: "List score distribution with count."
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Identifier of score: 5, 4, 3, 2, 1."
+              count:
+                type: integer
+                description: "Count of score."
+          example:
+            [{name: "5", count: 1},
+             {name: "4", count: 3},
+             {name: "3", count: 1},
+             {name: "2", count: 0},
+             {name: "1", count: 0}]
+        totalResponses:
+          type: integer
+          description: 'Number of total responses.'
+          example: 5
+        sizeFeedback:
+          type: array
+          description: "List of size feedback."
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Identifier of sizeFeedback: BIGGER, FIT, SMALLER."
+              count:
+                type: integer
+                description: "Count of sizeFeedback responses."
+          example:
+            [{name: "BIGGER", count: 0},
+             {name: "FIT", count: 2},
+             {name: "SMALLER", count: 0}]
