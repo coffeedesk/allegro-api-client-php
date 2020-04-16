@@ -57,7 +57,7 @@ class CheckoutFormSummary implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'total_to_pay' => 'Price'
+        'total_to_pay' => '\AllegroApi\Model\Price'
     ];
 
     /**
