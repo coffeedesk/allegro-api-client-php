@@ -49,6 +49,7 @@ class CheckoutFormStatus
     const READY_FOR_PROCESSING = 'READY_FOR_PROCESSING';
     const FULFILLMENT_STATUS_CHANGED = 'FULFILLMENT_STATUS_CHANGED';
     const BUYER_CANCELLED = 'BUYER_CANCELLED';
+    const CANCELLED = 'CANCELLED';
 
     /**
      * Gets allowable values of the enum
@@ -62,6 +63,7 @@ class CheckoutFormStatus
             self::READY_FOR_PROCESSING,
             self::FULFILLMENT_STATUS_CHANGED,
             self::BUYER_CANCELLED,
+            self::CANCELLED,
         ];
     }
 }
