@@ -48,7 +48,7 @@ class CheckoutFormStatus
     const FILLED_IN = 'FILLED_IN';
     const READY_FOR_PROCESSING = 'READY_FOR_PROCESSING';
     const CANCELLED = 'CANCELLED';
-    
+  
     /**
      * Gets allowable values of the enum
      * @return string[]
